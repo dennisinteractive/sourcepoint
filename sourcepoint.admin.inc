@@ -132,7 +132,7 @@ class SourcePointAsset {
    * Validate retrieved script.
    */
   private function isValidScript($data) {
-    return stripos(trim($data), '<script ') !== FALSE;
+    return preg_match('~<script.*</script>~i', $data);
   }
 
   private function encodeAsset($data = '') {

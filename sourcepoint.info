@@ -2,3 +2,5 @@ name = Sourcepoint
 description = Sourcepoint integration.
 core = 7.x
 configure = admin/config/system/sourcepoint
+files[] = tests/sourcepoint.test
+

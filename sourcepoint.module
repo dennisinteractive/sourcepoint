@@ -32,10 +32,9 @@ function sourcepoint_page_build() {
 
   if ($script = variable_get('sourcepoint_encoded_script', '')) {
     $decoded_script = base64_decode($script);
-
     drupal_add_html_head(array(
       '#type' => 'markup',
       '#markup' => $decoded_script,
-    ), 'sourcepoint_script');
+    ), 'sourcepoint');
   }
 }

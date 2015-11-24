@@ -24,7 +24,7 @@ class SourcePointAsset {
    */
   public function __construct($apiKey, $method) {
     if (empty($apiKey) || empty($method)) {
-      throw new Exception('Missing arguments in SourcePointAsset().');
+      throw new Exception('Missing arguments in SourcePointAsset.');
     }
     $this->apiKey = $apiKey;
     $this->serviceUrl = self::SERVICE_URL_BASE . "?delivery=$method";

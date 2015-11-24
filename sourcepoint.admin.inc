@@ -22,7 +22,10 @@ function sourcepoint_admin_settings_form($form_state) {
     '#title' => t('Delivery Method'),
     '#options' => array(
       'script' => t('As a tag'),
-      'inline' => t('Inline Script'),
+      // @TODO: Inline script should not be outputted directly onto the page
+      // Ideally it should be stored on a local file or a menu item that will
+      // return the script added to the header.
+      // 'inline' => t('Inline Script'),
     ),
     '#default_value' => variable_get('sourcepoint_get_method', ''),
     '#required' => TRUE,

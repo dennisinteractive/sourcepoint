@@ -54,7 +54,7 @@ class SourcePointAsset {
     // Check for Auth error (returned as JSON).
     $data_json = drupal_json_decode($data);
     if (!empty($data_json)) {
-      throw new Exception('Errors: ' . PHP_EOL . implode(', ', $data_json));
+      throw new Exception('Error(s): ' . PHP_EOL . implode(', ', $data_json));
     }
 
     // Check for Curl errors.
@@ -64,7 +64,7 @@ class SourcePointAsset {
 
     // Validate retrieved data.
     if (!$this->isValidScript($data)) {
-      throw new Exception('Retrievet script dosen\'t seems to be a valid one');
+      throw new Exception('Retrieved script doesn\'t seem to be valid.');
     }
 
     $this->virginData = $data;

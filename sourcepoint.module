@@ -22,6 +22,25 @@ function sourcepoint_menu() {
 }
 
 /**
+ * Helper to communicate with sourcepoint.
+ *
+ * @param $api_key The api key
+ * @param $method The method
+ * @return SourcePointAsset Script
+ * @throws Exception
+ */
+function sourcepoint_request_sourcepoint_script($api_key, $method) {
+  try {
+    // /Get/Attach encoded script value to the form element.
+    $sourcePoint = new SourcePointAsset($api_key, $method);
+    return $sourcePoint->determine_asset();
+  } catch (Exception $e) {
+    drupal_set_message(t($e->getMessage()), 'error');
+    throw new Exception($e);
+  }
+}
+
+/**
  * Implements hook_page_build().
  */
 function sourcepoint_page_build() {

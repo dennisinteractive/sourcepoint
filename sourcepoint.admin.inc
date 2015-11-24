@@ -46,14 +46,14 @@ function sourcepoint_admin_settings_form_validate($form, &$form_state) {
   $method = $form_state['input']['sourcepoint_get_method'];
 
   try {
-    // /Get/Attach encoded script value to the form element.
-    $sourcePoint = new SourcePointAsset($api_key, $method);
-    $data = $sourcePoint->determine_asset();
+    $data = sourcepoint_request_sourcepoint_script($api_key, $method);
     form_set_value($form['sourcepoint_encoded_script'], $data->encodedData, $form_state);
   } catch (Exception $e) {
-    form_set_error('sourcepoint_api_key', t($e->getMessage()));
+    form_set_error('sourcepoint_api_key', t('Invalid sourcepoint data.'));
   }
 }
+
+
 
 /**
  * Class SourcePointAsset.

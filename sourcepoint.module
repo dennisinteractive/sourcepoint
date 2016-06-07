@@ -37,17 +37,19 @@ function sourcepoint_menu() {
 /**
  * Helper to communicate with sourcepoint.
  *
+ * @param $webhook The webhook
  * @param $api_key The api key
- * @param $method The method
+ * @param $options The options
+ *
  * @return SourcePointAsset Script
  * @throws Exception
  */
-function sourcepoint_request_sourcepoint_script($api_key, $method) {
+function sourcepoint_request_sourcepoint_script($webhook, $api_key, $options) {
   try {
-    $sourcePoint = new SourcePointAsset($api_key, $method);
+    $sourcePoint = new SourcePointAsset($webhook, $api_key, $options);
     return $sourcePoint->determine_asset();
   } catch (Exception $e) {
-    drupal_set_message(t($e->getMessage()), 'error');
+    //drupal_set_message(t($e->getMessage()), 'error');
     throw new Exception($e);
   }
 }

@@ -12,7 +12,7 @@ class SourcePointAsset {
   /**
    * The API Key.
    */
-  protected $apiKey;
+  protected $api_key;
 
   /**
    * The Service Url.
@@ -20,14 +20,28 @@ class SourcePointAsset {
   protected $serviceUrl;
 
   /**
+   * The script.
+   */
+  public $script;
+
+  /**
+   * Stores the options.
+   */
+  protected $options;
+
+  /**
    * Initial setup.
    */
-  public function __construct($apiKey, $method) {
-    if (empty($apiKey) || empty($method)) {
+  public function __construct($webhook, $api_key, $options) {
+    if (empty($webhook) || empty($api_key) || empty($options)) {
       throw new Exception('Missing arguments in SourcePointAsset.');
     }
-    $this->apiKey = $apiKey;
-    $this->serviceUrl = self::SERVICE_URL_BASE . "?delivery=$method";
+
+    $webhook = trim($webhook, '/');
+    $this->apiKey = $api_key;
+    $this->options = $options;
+    $options = drupal_http_build_query($this->options);
+    $this->serviceUrl = trim(self::SERVICE_URL_BASE, '/') . "/$webhook?$options";
   }
 
   public function determine_asset() {
@@ -54,17 +68,17 @@ class SourcePointAsset {
     // Check for Auth error (returned as JSON).
     $data_json = drupal_json_decode($data);
     if (!empty($data_json)) {
-      throw new Exception('Error(s): ' . PHP_EOL . implode(', ', $data_json));
+      throw new Exception(t('Error(s):') . ' ' . PHP_EOL . implode(', ', $data_json));
     }
 
     // Check for Curl errors.
     if (curl_errno($ch)) {
-      throw new Exception('Curl Request Error:' . curl_error($ch));
+      throw new Exception(t('Curl Request Error:') . curl_error($ch));
     }
 
     // Validate retrieved data.
     if (!$this->isValidScript($data)) {
-      throw new Exception('Retrieved script doesn\'t seem to be valid.');
+      throw new Exception(t('Retrieved script doesn\'t seem to be valid.'));
     }
 
     $this->script = $data;
@@ -76,7 +90,17 @@ class SourcePointAsset {
    * Validate retrieved script.
    */
   private function isValidScript($data) {
-    return preg_match('~<script.*</script>~Usmi', $data);
+    if (isset($this->options['fmt'])) {
+      switch ($this->options['fmt']) {
+        case 'js':
+          return preg_match('~{function~', $data);
+        break;
+
+        case 'cdn':
+          return preg_match('~cdn\.~', $data);
+        break;
+      }
+    }
   }
 
 }

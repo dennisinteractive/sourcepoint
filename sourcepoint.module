@@ -62,7 +62,11 @@ function sourcepoint_page_build() {
     return;
   }
 
-  if ($script = variable_get('sourcepoint_encoded_script', '')) {
+  if (!variable_get('sourcepoint_enabled', 1)) {
+    return;
+  }
+
+  if ($script = variable_get('sourcepoint_encoded_script', 1)) {
     $decoded_script = base64_decode($script);
     drupal_add_html_head(array(
       '#type' => 'markup',

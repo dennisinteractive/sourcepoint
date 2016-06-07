@@ -9,6 +9,13 @@
  */
 function sourcepoint_admin_settings_form($form_state) {
 
+  $form['sourcepoint_enabled'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enabled'),
+    '#default_value' => variable_get('sourcepoint_enabled', 1),
+    '#description' => 'Global kill switch.',
+  );
+
   $form['sourcepoint_api_key'] = array(
     '#title' => t('Sourcepoint Api Key'),
     '#type' => 'textfield',

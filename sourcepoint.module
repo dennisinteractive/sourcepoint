@@ -74,3 +74,12 @@ function sourcepoint_page_build() {
     ), 'sourcepoint');
   }
 }
+
+/**
+ * Getter for pub base configuration.
+ */
+function _sourcepoint_get_pub_base() {
+  global $base_url;
+
+  return trim(variable_get('sourcepoint_pub_base', $base_url . '/pub/base'), '/');
+}

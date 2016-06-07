@@ -45,6 +45,43 @@ function sourcepoint_admin_settings_form($form_state) {
     '#type' => 'hidden',
   );
 
+  $form['recovery_script'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Recovery script'),
+  );
+  $form['recovery_script']['sourcepoint_pub_base'] = array(
+    '#title' => t('Pub url'),
+    '#type' => 'textfield',
+    '#default_value' => _sourcepoint_get_pub_base(),
+    '#size' => 70,
+    '#description' => t('Full URL for the pubbase to be included in the returned CS-URL.'),
+    '#required' => TRUE,
+  );
+  $form['recovery_script']['sourcepoint_env'] = array(
+    '#title' => t('Environment'),
+    '#type' => 'select',
+    '#options' => array(
+      'prod' => t('Production'),
+      'stage' => t('Staging'),
+    ),
+    '#default_value' => variable_get('sourcepoint_env', 'prod'),
+    '#description' => t('Production or Staging.'),
+    '#required' => TRUE,
+  );
+
+  $form['bootstrap_script'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Bootstrap script'),
+  );
+  $form['bootstrap_script']['sourcepoint_bootstrap_version'] = array(
+    '#title' => t('Version'),
+    '#type' => 'textfield',
+    '#default_value' => variable_get('sourcepoint_bootstrap_version', ''),
+    '#size' => 3,
+    '#description' => t('Bootstrap script version.'),
+    '#required' => TRUE,
+  );
+
   return system_settings_form($form);
 }
 

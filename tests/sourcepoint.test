@@ -23,7 +23,7 @@ class SourcepointTests extends DrupalWebTestCase {
   public function setUp() {
     parent::setUp(array('sourcepoint'));
 
-    variable_set('sourcepoint_encoded_script', base64_encode('<script src="//sourcepoint_script_test.js"></script>'));
+    variable_set('sourcepoint_recovery_script', '<script src="//sourcepoint_script_test.js"></script>');
   }
 
   public function testTheScriptIsAddedOnPage() {

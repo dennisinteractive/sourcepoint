@@ -67,8 +67,7 @@ class SourcePointAsset {
       throw new Exception('Retrieved script doesn\'t seem to be valid.');
     }
 
-    $this->virginData = $data;
-    $this->encodedData = $this->encodeAsset($data);
+    $this->script = $data;
 
     return $this;
   }
@@ -80,7 +79,4 @@ class SourcePointAsset {
     return preg_match('~<script.*</script>~Usmi', $data);
   }
 
-  private function encodeAsset($data = '') {
-    return base64_encode($data);
-  }
 }

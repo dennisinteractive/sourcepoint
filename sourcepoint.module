@@ -44,7 +44,6 @@ function sourcepoint_menu() {
  */
 function sourcepoint_request_sourcepoint_script($api_key, $method) {
   try {
-    // /Get/Attach encoded script value to the form element.
     $sourcePoint = new SourcePointAsset($api_key, $method);
     return $sourcePoint->determine_asset();
   } catch (Exception $e) {
@@ -66,11 +65,10 @@ function sourcepoint_page_build() {
     return;
   }
 
-  if ($script = variable_get('sourcepoint_encoded_script', 1)) {
-    $decoded_script = base64_decode($script);
+  if ($script = variable_get('sourcepoint_recovery_script')) {
     drupal_add_html_head(array(
       '#type' => 'markup',
-      '#markup' => $decoded_script . PHP_EOL,
+      '#markup' => $script . PHP_EOL,
     ), 'sourcepoint');
   }
 }

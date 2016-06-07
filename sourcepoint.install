@@ -6,5 +6,6 @@
 function sourcepoint_uninstall() {
   variable_del('sourcepoint_api_key');
   variable_del('sourcepoint_get_method');
-  variable_del('sourcepoint_encoded_script');
+  variable_del('sourcepoint_recovery_script');
+  variable_del('sourcepoint_bootstrap_script');
 }

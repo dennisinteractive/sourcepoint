@@ -39,12 +39,9 @@ function sourcepoint_admin_settings_form($form_state) {
     '#description' => t('Independent on option - The script will have the async param.'),
   );
 
-  // Hold encoded script.
-  $form['sourcepoint_encoded_script'] = array(
-    '#title' => t('Sourcepoint Api Key'),
+  $form['sourcepoint_recovery_script'] = array(
     '#type' => 'hidden',
   );
-
   $form['recovery_script'] = array(
     '#type' => 'fieldset',
     '#title' => t('Recovery script'),
@@ -69,6 +66,9 @@ function sourcepoint_admin_settings_form($form_state) {
     '#required' => TRUE,
   );
 
+  $form['sourcepoint_bootstrap_script'] = array(
+    '#type' => 'hidden',
+  );
   $form['bootstrap_script'] = array(
     '#type' => 'fieldset',
     '#title' => t('Bootstrap script'),
@@ -77,7 +77,7 @@ function sourcepoint_admin_settings_form($form_state) {
     '#title' => t('Version'),
     '#type' => 'textfield',
     '#default_value' => variable_get('sourcepoint_bootstrap_version', ''),
-    '#size' => 3,
+    '#size' => 6,
     '#description' => t('Bootstrap script version.'),
     '#required' => TRUE,
   );
@@ -94,7 +94,7 @@ function sourcepoint_admin_settings_form_validate($form, &$form_state) {
 
   try {
     $data = sourcepoint_request_sourcepoint_script($api_key, $method);
-    form_set_value($form['sourcepoint_encoded_script'], $data->encodedData, $form_state);
+    form_set_value($form['sourcepoint_recovery_script'], $data->script, $form_state);
   } catch (Exception $e) {
     form_set_error('sourcepoint_api_key', t('Invalid sourcepoint data.'));
   }

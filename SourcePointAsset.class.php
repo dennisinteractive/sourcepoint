@@ -8,43 +8,36 @@ class SourcePointAsset {
    * The Sourcepoint Service URL.
    */
   const SERVICE_URL_BASE = 'https://api.sourcepoint.com/script';
-
   /**
    * The API Key.
    */
   protected $api_key;
-
   /**
-   * The Service Url.
+   * The endpoint.
    */
-  protected $serviceUrl;
-
-  /**
-   * The script.
-   */
-  public $script;
-
+  protected $endpoint;
   /**
    * Stores the options.
    */
   protected $options;
+  /**
+   * The script.
+   */
+  public $script = NULL;
 
   /**
    * Initial setup.
    */
-  public function __construct($webhook, $api_key, $options) {
-    if (empty($webhook) || empty($api_key) || empty($options)) {
+  public function __construct($endpoint, $api_key) {
+    if (empty($endpoint) || empty($api_key)) {
       throw new Exception('Missing arguments in SourcePointAsset.');
     }
 
-    $webhook = trim($webhook, '/');
+    $this->endpoint = trim($endpoint, '/');
     $this->apiKey = $api_key;
-    $this->options = $options;
-    $options = drupal_http_build_query($this->options);
-    $this->serviceUrl = trim(self::SERVICE_URL_BASE, '/') . "/$webhook?$options";
   }
 
-  public function determine_asset() {
+  public function fetch() {
     if (!function_exists('curl_init')) {
       throw new Exception('php-curl is required.');
     }
@@ -54,8 +47,11 @@ class SourcePointAsset {
       "Authorization: Token token=$this->apiKey",
     );
 
+    $options = drupal_http_build_query($this->options);
+    $url = trim(self::SERVICE_URL_BASE, '/') . '/' . $this->endpoint . '?' . $options;
+
     // Curl init.
-    $ch = curl_init($this->serviceUrl);
+    $ch = curl_init($url);
     curl_setopt_array($ch, array(
       CURLOPT_RETURNTRANSFER => TRUE,
       CURLINFO_HEADER_OUT => TRUE,
@@ -94,13 +90,21 @@ class SourcePointAsset {
       switch ($this->options['fmt']) {
         case 'js':
           return preg_match('~{function~', $data);
-        break;
+          break;
 
         case 'cdn':
           return preg_match('~cdn\.~', $data);
-        break;
+          break;
       }
     }
   }
 
+  /**
+   * Setter for options.
+   *
+   * @param $options
+   */
+  public function setOptions($options) {
+    $this->options = $options;
+  }
 }

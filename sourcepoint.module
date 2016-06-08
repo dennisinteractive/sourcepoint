@@ -12,8 +12,8 @@ spl_autoload_register('sourcepoint_autoload', TRUE, TRUE);
  * @param $class
  */
 function sourcepoint_autoload($class) {
-  if (file_exists(__DIR__ . '/'.  $class . '.class.php')) {
-    include(__DIR__ . '/'.  $class . '.class.php');
+  if (file_exists(__DIR__ . '/' . $class . '.class.php')) {
+    include(__DIR__ . '/' . $class . '.class.php');
   }
 }
 
@@ -55,11 +55,133 @@ function sourcepoint_page_build() {
   }
 }
 
-/**
- * Getter for pub base configuration.
- */
-function _sourcepoint_get_pub_base() {
-  global $base_url;
+function _sourcepoint_get_endpoint($script_type) {
+  switch ($script_type) {
+    case 'recovery':
+      return 'cs_recovery';
+      break;
 
-  return trim(variable_get('sourcepoint_pub_base', $base_url . '/pub/base'), '/');
+    case 'bootstrap':
+      return 'bootstrap';
+      break;
+
+    default:
+      drupal_set_message(t('Script type "!type" is invalid.', array('!type' => $script_type)), 'error');
+  }
+}
+
+function _sourcepoint_fetch_script($script_type, $api_key = NULL, $options = NULL) {
+  if (is_null($options)) {
+    // Get options for the script.
+    $options = _sourcepoint_get_script_options($script_type);
+  }
+  if (is_null($api_key)) {
+    // Get API keys from settings.
+    $api_key = variable_get('sourcepoint_api_key');
+  }
+
+  try {
+    $endpoint = _sourcepoint_get_endpoint($script_type);
+    $sourcePoint = new SourcePointAsset($endpoint, $api_key);
+    $sourcePoint->setOptions($options);
+    $response = $sourcePoint->fetch();
+
+    if ($script = $response->script) {
+      return $script;
+    }
+  } catch (Exception $e) {
+    throw $e;
+  }
+}
+
+/**
+ * Helper to set the message on the script status.
+ *
+ * @param $message
+ * @param $class
+ *
+ * @return string
+ */
+function _sourcepoint_set_message($message, $class) {
+  return '<div class="' . $class . '">' . $message . '</div>';
+}
+
+/**
+ * Helper to build the key used to store the script in the variables.
+ *
+ * @param $options
+ *
+ * @return string
+ */
+function _sourcepoint_build_script_key($options) {
+  return implode('_', array_values($options));
+}
+
+/**
+ * Helper to return the array of options and values for the Recovery script.
+ *
+ * @param array $form_state If this argument is passed, the values will be
+ * retrieved from it. Default is to retrieve from settings.
+ * @param null  $script_type
+ *
+ * @return array
+ */
+function _sourcepoint_get_script_options($script_type, $form_state = []) {
+  switch ($script_type) {
+    case 'recovery':
+      if (isset($form_state['input']['sourcepoint_pub_base'])) {
+        $pub_base = $form_state['input']['sourcepoint_pub_base'];
+      }
+      else {
+        global $base_url;
+        $pub_base = trim(variable_get('sourcepoint_pub_base', $base_url . '/pub/base'), '/');
+      }
+
+      if (isset($form_state['input']['sourcepoint_pub_adserver'])) {
+        $pub_adserver = $form_state['input']['sourcepoint_pub_adserver'];
+      }
+      else {
+        $pub_adserver = variable_get('sourcepoint_pub_adserver', 'dfp');
+      }
+
+      if (isset($form_state['input']['sourcepoint_env'])) {
+        $env = $form_state['input']['sourcepoint_env'];
+      }
+      else {
+        $env = variable_get('sourcepoint_env', 'prod');
+      }
+
+      if (isset($form_state['input']['sourcepoint_recovery_script_format'])) {
+        $fmt = $form_state['input']['sourcepoint_recovery_script_format'];
+      }
+      else {
+        $fmt = variable_get('sourcepoint_recovery_script_format', 'cdn');
+      }
+
+      return [
+        'pub_base' => $pub_base,
+        'pub_adserver' => $pub_adserver,
+        'env' => $env,
+        'fmt' => $fmt,
+      ];
+      break;
+
+    case 'bootstrap':
+      if (isset($form_state['input']['sourcepoint_bootstrap_script_version'])) {
+        $version = $form_state['input']['sourcepoint_bootstrap_script_version'];
+      }
+      else {
+        $version = variable_get('sourcepoint_bootstrap_script_version', '');
+      }
+
+      return [
+        'v' => $version,
+        'fmt' => 'js',
+      ];
+      break;
+
+    default:
+      drupal_set_message(t('Script type "!type" is invalid.', array('!type' => $script_type)), 'error');
+  }
+
 }

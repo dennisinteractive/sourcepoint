@@ -24,11 +24,44 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#required' => TRUE,
   );
 
+  // Bootstrap script options.
+  $bootstrap_script_options = _sourcepoint_get_script_options('bootstrap', $form_state);
+  $form['bootstrap_script'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Bootstrap script'),
+    '#prefix' => '<div id="bootstrap-script">',
+    '#suffix' => '</div>',
+  );
+  $form['bootstrap_script']['sourcepoint_bootstrap_script_version'] = array(
+    '#title' => t('Version'),
+    '#type' => 'textfield',
+    '#default_value' => $bootstrap_script_options['v'],
+    '#size' => 6,
+    '#description' => t('Bootstrap script version.'),
+    '#required' => TRUE,
+  );
+  $form['bootstrap_script']['bootstrap_script_status'] = array(
+    '#markup' => _sourcepoint_get_script_status($form_state, 'bootstrap'),
+  );
+  $form['bootstrap_script']['update_bootstrap_script'] = array(
+    '#type' => 'submit',
+    '#name' => 'update_bootstrap_script',
+    '#value' => t('Update'),
+    '#description' => t('When you click update, the script is retrieved from Sourcepoint servers and stored locally.'),
+    '#ajax' => array(
+      'callback' => 'sourcepoint_update_bootstrap_script_callback',
+      'wrapper' => 'bootstrap-script',
+      'method' => 'html',
+    ),
+  );
+
   // Recovery script options.
-  $recovery_script_options = _sourcepoint_get_recovery_script_options($form_state);
+  $recovery_script_options = _sourcepoint_get_script_options('recovery', $form_state);
   $form['recovery_script'] = array(
     '#type' => 'fieldset',
     '#title' => t('Recovery script'),
+    '#prefix' => '<div id="recovery-script">',
+    '#suffix' => '</div>',
   );
   $form['recovery_script']['sourcepoint_pub_base'] = array(
     '#title' => t('Pub url'),
@@ -72,32 +105,18 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#description' => t('Format of returned script. JS is raw javascript and CDN is a CDN-based URL.'),
   );
   $form['recovery_script']['recovery_script_status'] = array(
-    '#markup' => _sourcepoint_get_recovery_script_status($form_state),
-    '#prefix' => '<div id="recovery-script-status-wrapper">',
-    '#suffix' => '</div>',
+    '#markup' => _sourcepoint_get_script_status($form_state, 'recovery'),
   );
   $form['recovery_script']['update_recovery_script'] = array(
     '#type' => 'submit',
+    '#name' => 'update_recovery_script',
     '#value' => t('Update'),
     '#description' => t('When you click update, the script is retrieved from Sourcepoint servers and stored locally.'),
     '#ajax' => array(
       'callback' => 'sourcepoint_update_recovery_script_callback',
-      'wrapper' => 'recovery-script-status-wrapper',
-      'method' => 'replace',
+      'wrapper' => 'recovery-script',
+      'method' => 'html',
     ),
-  );
-
-  // Bootstrap script options.
-  $form['sourcepoint_bootstrap_script'] = array(
-    '#type' => 'hidden',
-  );
-  $form['bootstrap_script']['sourcepoint_bootstrap_version'] = array(
-    '#title' => t('Version'),
-    '#type' => 'textfield',
-    '#default_value' => variable_get('sourcepoint_bootstrap_version', ''),
-    '#size' => 6,
-    '#description' => t('Bootstrap script version.'),
-    '#required' => TRUE,
   );
 
   return system_settings_form($form);
@@ -108,13 +127,38 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
  */
 function sourcepoint_admin_settings_form_validate($form, &$form_state) {
   // If the script hasn't been retrieved using Update button, do it now.
-  if (!_sourcepoint_recovery_script_available($form_state)) {
-    sourcepoint_update_recovery_script_callback($form, $form_state);
+  if (!_sourcepoint_script_available($form_state, 'recovery')) {
+    _sourcepoint_update_script($form_state, 'recovery');
   }
   // If we still don't have a script, display error message.
-  if (!_sourcepoint_recovery_script_available($form_state)) {
+  if (!_sourcepoint_script_available($form_state, 'recovery')) {
     form_set_error('recovery_script_status', t('Recovery script not available.'));
   }
+
+  // If the script hasn't been retrieved using Update button, do it now.
+  if (!_sourcepoint_script_available($form_state, 'bootstrap')) {
+    _sourcepoint_update_script($form_state, 'bootstrap');
+  }
+  // If we still don't have a script, display error message.
+  if (!_sourcepoint_script_available($form_state, 'bootstrap')) {
+    form_set_error('bootstrap_script_status', t('Bootstrap script not available.'));
+  }
+}
+
+/**
+ * Callback for Bootstrap script update button.
+ *
+ * @param $form
+ * @param $form_state
+ *
+ * @return string
+ */
+function sourcepoint_update_bootstrap_script_callback($form, $form_state) {
+  $script_type = 'bootstrap';
+  $message = _sourcepoint_update_script($form_state, $script_type);
+  $form['bootstrap_script']['bootstrap_script_status']['#markup'] = $message;
+
+  return $form['bootstrap_script'];
 }
 
 /**
@@ -126,87 +170,43 @@ function sourcepoint_admin_settings_form_validate($form, &$form_state) {
  * @return string
  */
 function sourcepoint_update_recovery_script_callback($form, $form_state) {
-  $endpoint = '/cs_recovery';
-  $api_key = $form_state['input']['sourcepoint_api_key'];
-  $options = _sourcepoint_get_recovery_script_options($form_state);
+  $script_type = 'recovery';
+  $message = _sourcepoint_update_script($form_state, $script_type);
+  $form['recovery_script']['recovery_script_status']['#markup'] = $message;
 
-  try {
-    $sourcePoint = new SourcePointAsset($endpoint, $api_key);
-    $sourcePoint->setOptions($options);
-    $response = $sourcePoint->fetch();
-
-    if ($script = $response->script) {
-      // Create key to store in settings.
-      $key = _sourcepoint_get_recovery_script_key($options);
-      variable_set('sourcepoint_recovery_script', [$key => $script]);
-
-      // Update status.
-      return _sourcepoint_get_recovery_script_status($form_state);
-    }
-  } catch (Exception $e) {
-    // Update status with a custom message;
-    return _sourcepoint_get_recovery_script_status($form_state, $e->getMessage(), 'error');
-  }
-
-  // Update status with a custom message;
-  return _sourcepoint_get_recovery_script_status($form_state, t('Error fetching script.'), 'error');
+  return $form['recovery_script'];
 }
 
 /**
- * Helper to build the key used to store the script in the variables.
+ * Helper to do the actual call to the server and store the scripts.
  *
- * @param $options
+ * @param $form_state
+ * @param $script_type
  *
  * @return string
  */
-function _sourcepoint_get_recovery_script_key($options) {
-  return implode('_', array_values($options));
-}
+function _sourcepoint_update_script($form_state, $script_type) {
+  $options = _sourcepoint_get_script_options($script_type, $form_state);
+  $api_key = $form_state['input']['sourcepoint_api_key'];
+  variable_del('sourcepoint_' . $script_type . '_script');
 
-/**
- * Helper to return the array of options and values for the Recovery script.
- *
- * @param array $form_state If this argument is passed, the values will be
- * retrieved from it. Default is to retrieve from settings.
- *
- * @return array
- */
-function _sourcepoint_get_recovery_script_options($form_state = []) {
-  if (isset($form_state['input']['sourcepoint_pub_base'])) {
-    $pub_base = $form_state['input']['sourcepoint_pub_base'];
-  }
-  else {
-    global $base_url;
-    $pub_base = trim(variable_get('sourcepoint_pub_base', $base_url . '/pub/base'), '/');
-  }
+  try {
+    $script = _sourcepoint_fetch_script($script_type, $api_key, $options);
+    if (isset($script)) {
+      // Create key to store in settings.
+      $key = _sourcepoint_build_script_key($options);
+      variable_set('sourcepoint_' . $script_type . '_script', [$key => $script]);
 
-  if (isset($form_state['input']['sourcepoint_pub_adserver'])) {
-    $pub_adserver = $form_state['input']['sourcepoint_pub_adserver'];
-  }
-  else {
-    $pub_adserver = variable_get('sourcepoint_pub_adserver', 'dfp');
+      // Update status.
+      return _sourcepoint_get_script_status($form_state, $script_type);
+    }
+  } catch (Exception $e) {
+    // Update status with a custom message;
+    return _sourcepoint_set_message($e->getMessage(), 'error');
   }
 
-  if (isset($form_state['input']['sourcepoint_env'])) {
-    $env = $form_state['input']['sourcepoint_env'];
-  }
-  else {
-    $env = variable_get('sourcepoint_env', 'prod');
-  }
-
-  if (isset($form_state['input']['sourcepoint_recovery_script_format'])) {
-    $fmt = $form_state['input']['sourcepoint_recovery_script_format'];
-  }
-  else {
-    $fmt = variable_get('sourcepoint_recovery_script_format', 'cdn');
-  }
-
-  return [
-    'pub_base' => $pub_base,
-    'pub_adserver' => $pub_adserver,
-    'env' => $env,
-    'fmt' => $fmt,
-  ];
+  // Update status with a custom message;
+  return _sourcepoint_set_message(t('Error fetching script.'), 'error');
 }
 
 /**
@@ -214,42 +214,34 @@ function _sourcepoint_get_recovery_script_options($form_state = []) {
  *
  * @param array $form_state If this argument is passed, the values will be retrieved
  * from it. Default is to retrieve from settings.
+ * @param null  $script_type
  *
  * @return bool
  */
-function _sourcepoint_recovery_script_available($form_state = []) {
-  $script_value = variable_get('sourcepoint_recovery_script');
-  $options = _sourcepoint_get_recovery_script_options($form_state);
-  $key = _sourcepoint_get_recovery_script_key($options);
+function _sourcepoint_script_available($form_state = [], $script_type) {
+  $script_value = variable_get('sourcepoint_' . $script_type . '_script');
+  $options = _sourcepoint_get_script_options($script_type, $form_state);
+  $key = _sourcepoint_build_script_key($options);
   if (isset($script_value[$key])) {
     return TRUE;
   }
+
   return FALSE;
 }
 
 /**
  * Helper to create the Html message status.
  *
- * @param array  $form_state
- * @param null   $custom_message
- * @param string $class
+ * @param array $form_state
+ * @param null  $script_type
  *
  * @return string
  */
-function _sourcepoint_get_recovery_script_status($form_state = [], $custom_message = NULL, $class = 'error') {
-  if (!is_null($custom_message)) {
-    $message = $custom_message;
+function _sourcepoint_get_script_status($form_state, $script_type) {
+  if (_sourcepoint_script_available($form_state, $script_type)) {
+    return _sourcepoint_set_message('Script is stored locally.', 'ok');
   }
   else {
-    if (_sourcepoint_recovery_script_available($form_state)) {
-      $class = 'ok';
-      $message = t('Script is stored locally.');
-    }
-    else {
-      $class = 'error';
-      $message = t('No script available for the selected options, click Update.');
-    }
+    return _sourcepoint_set_message('No script available for the selected options, click Update.', 'error');
   }
-
-  return '<div class="' . $class . '">' . $message . '</div>';
 }

@@ -60,16 +60,17 @@ class SourcePointAsset {
 
     // Curl exec.
     $data = curl_exec($ch);
+    $info = curl_getinfo($ch);
 
     // Check for Auth error (returned as JSON).
     $data_json = drupal_json_decode($data);
     if (!empty($data_json)) {
-      throw new Exception(t('Error(s):') . ' ' . PHP_EOL . implode(', ', $data_json));
+      throw new Exception(implode(', ', $data_json));
     }
 
     // Check for Curl errors.
-    if (curl_errno($ch)) {
-      throw new Exception(t('Curl Request Error:') . curl_error($ch));
+    if (curl_errno($ch) || $info['http_code'] != 200) {
+      throw new Exception(t('Curl Request Error') . curl_error($ch));
     }
 
     // Validate retrieved data.
@@ -89,7 +90,7 @@ class SourcePointAsset {
     if (isset($this->options['fmt'])) {
       switch ($this->options['fmt']) {
         case 'js':
-          return preg_match('~{function~', $data);
+          return preg_match('~^!function~', $data);
           break;
 
         case 'cdn':

@@ -14,13 +14,28 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Enabled'),
     '#default_value' => variable_get('sourcepoint_enabled', 1),
-    '#description' => 'Global kill switch.',
+    '#description' => t('Global kill switch.'),
+  );
+  $form['sourcepoint_account_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Sourcepoint Account ID'),
+    '#default_value' => variable_get('sourcepoint_account_id', ''),
+    '#size' => 20,
+    '#required' => TRUE,
   );
   $form['sourcepoint_api_key'] = array(
     '#type' => 'textfield',
     '#title' => t('Sourcepoint Api Key'),
     '#default_value' => variable_get('sourcepoint_api_key', ''),
-    '#size' => 70,
+    '#size' => 50,
+    '#required' => TRUE,
+  );
+  $form['sourcepoint_content_control_url'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Content Control landing page'),
+    '#default_value' => variable_get('sourcepoint_content_control_url', ''),
+    '#size' => 50,
+    '#description' => t('The Url of the landing page. i.e. http://www.example.com/page'),
     '#required' => TRUE,
   );
 
@@ -34,7 +49,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#title' => t('Version'),
     '#type' => 'textfield',
     '#default_value' => $bootstrap_script_options['v'],
-    '#size' => 6,
+    '#size' => 10,
     '#description' => t('Bootstrap script version.'),
     '#required' => TRUE,
   );
@@ -66,7 +81,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#title' => t('Pub url'),
     '#type' => 'textfield',
     '#default_value' => $recovery_script_options['pub_base'],
-    '#size' => 70,
+    '#size' => 50,
     '#description' => t('Full URL for the pubbase to be included in the returned CS-URL.'),
     '#required' => TRUE,
   );

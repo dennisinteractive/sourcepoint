@@ -169,10 +169,29 @@ function sourcepoint_admin_settings_form_validate($form, &$form_state) {
     form_set_error('bootstrap_script_status', t('Bootstrap script not available.'));
   }
 
+  // Sanitize and validate src path.
+  sourcepoint_validate_src_path($form, $form_state);
+}
+
+/**
+ * Helper to validate and sanitize the recovery script path.
+ *
+ * @param $form
+ * @param $form_state
+ */
+function sourcepoint_validate_src_path($form, &$form_state) {
   // Sanitize and normalize path.
   $src_path = $form_state['input']['sourcepoint_recovery_script_path'];
   $src_path = trim($src_path, '/');
-  $src_path = substr($src_path, 0, strpos($src_path, '.js'));
+  if (strpos($src_path, '.js') !== FALSE) {
+    $src_path = str_replace('.js', '', $src_path);
+  }
+  if (module_exists('pathauto')) {
+    module_load_include('inc', 'pathauto');
+    if (function_exists('pathauto_cleanstring')) {
+      $src_path = pathauto_cleanstring($src_path);
+    }
+  }
   $src_path = $src_path . '.js';
 
   // Check that the src path changed and it doesn't exist as a menu item.

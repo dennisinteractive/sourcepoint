@@ -24,7 +24,7 @@ function sourcepoint_uninstall() {
 /**
  * Upgrade to 2.x.
  */
-function sourcepoint_update_7001() {
+function sourcepoint_update_7200() {
   // Delete previous variables.
   variable_del('sourcepoint_get_method');
   variable_del('sourcepoint_recovery_script');

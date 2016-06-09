@@ -29,8 +29,6 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
   $form['bootstrap_script'] = array(
     '#type' => 'fieldset',
     '#title' => t('Bootstrap script'),
-    '#prefix' => '<div id="bootstrap-script">',
-    '#suffix' => '</div>',
   );
   $form['bootstrap_script']['sourcepoint_bootstrap_script_version'] = array(
     '#title' => t('Version'),
@@ -41,9 +39,12 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#required' => TRUE,
   );
   $form['bootstrap_script']['bootstrap_script_status'] = array(
-    '#markup' => _sourcepoint_get_script_status($form_state, 'bootstrap'),
+    '#type' => 'fieldset',
+    '#title' => _sourcepoint_get_script_status($form_state, 'bootstrap'),
+    '#prefix' => '<div id="bootstrap-script">',
+    '#suffix' => '</div>',
   );
-  $form['bootstrap_script']['update_bootstrap_script'] = array(
+  $form['bootstrap_script']['bootstrap_script_status']['update_bootstrap_script'] = array(
     '#type' => 'submit',
     '#name' => 'update_bootstrap_script',
     '#value' => t('Update'),
@@ -60,8 +61,6 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
   $form['recovery_script'] = array(
     '#type' => 'fieldset',
     '#title' => t('Recovery script'),
-    '#prefix' => '<div id="recovery-script">',
-    '#suffix' => '</div>',
   );
   $form['recovery_script']['sourcepoint_pub_base'] = array(
     '#title' => t('Pub url'),
@@ -105,9 +104,12 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#description' => t('Format of returned script. JS is raw javascript and CDN is a CDN-based URL.'),
   );
   $form['recovery_script']['recovery_script_status'] = array(
-    '#markup' => _sourcepoint_get_script_status($form_state, 'recovery'),
+    '#type' => 'fieldset',
+    '#title' => _sourcepoint_get_script_status($form_state, 'recovery'),
+    '#prefix' => '<div id="recovery-script">',
+    '#suffix' => '</div>',
   );
-  $form['recovery_script']['update_recovery_script'] = array(
+  $form['recovery_script']['recovery_script_status']['update_recovery_script'] = array(
     '#type' => 'submit',
     '#name' => 'update_recovery_script',
     '#value' => t('Update'),
@@ -156,9 +158,9 @@ function sourcepoint_admin_settings_form_validate($form, &$form_state) {
 function sourcepoint_update_bootstrap_script_callback($form, $form_state) {
   $script_type = 'bootstrap';
   $message = _sourcepoint_update_script($form_state, $script_type);
-  $form['bootstrap_script']['bootstrap_script_status']['#markup'] = $message;
+  $form['bootstrap_script']['bootstrap_script_status']['#title'] = $message;
 
-  return $form['bootstrap_script'];
+  return $form['bootstrap_script']['bootstrap_script_status'];
 }
 
 /**
@@ -172,9 +174,9 @@ function sourcepoint_update_bootstrap_script_callback($form, $form_state) {
 function sourcepoint_update_recovery_script_callback($form, $form_state) {
   $script_type = 'recovery';
   $message = _sourcepoint_update_script($form_state, $script_type);
-  $form['recovery_script']['recovery_script_status']['#markup'] = $message;
+  $form['recovery_script']['recovery_script_status']['#title'] = $message;
 
-  return $form['recovery_script'];
+  return $form['recovery_script']['recovery_script_status'];
 }
 
 /**

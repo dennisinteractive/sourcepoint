@@ -32,10 +32,10 @@ variable_set('sourcepoint_bootstrap_script', [$key => $script]);
 ### Retrieving and storing Recovery script:
 ```php
 // Set options.
-variable_set('sourcepoint_env', 'prod');
-variable_set('sourcepoint_pub_adserver', 'dfp');
+variable_set('sourcepoint_recovery_script_env', 'prod');
+variable_set('sourcepoint_recovery_script_pub_adserver', 'dfp');
 variable_set('sourcepoint_recovery_script_format', 'cdn');
-variable_set('sourcepoint_pub_base', 'http://www.example.com');
+variable_set('sourcepoint_recovery_script_pub_base', 'http://www.example.com');
 
 // Fetch the script.
 $script = sourcepoint_fetch_script('recovery');

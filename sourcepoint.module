@@ -39,12 +39,12 @@ function sourcepoint_menu() {
     );
   }
   // Page callback for pub_base.
-  if ($pub_base = variable_get('sourcepoint_pub_base')) {
+  if ($pub_base = variable_get('sourcepoint_recovery_script_pub_base')) {
     $pub_base = parse_url($pub_base);
     $pub_base = $pub_base['path'];
     $pub_base = trim($pub_base, '/');
     $items[$pub_base] = array(
-      'page callback' => 'sourcepoint_pub_base_page',
+      'page callback' => 'sourcepoint_recovery_script_pub_base_page',
       'access callback' => TRUE,
       'type' => MENU_CALLBACK,
     );
@@ -65,7 +65,7 @@ function sourcepoint_recovery_script_path() {
 /**
  * Page callback for recovery script path.
  */
-function sourcepoint_pub_base_page() {
+function sourcepoint_recovery_script_pub_base_page() {
   watchdog('sourcepoint', t('Pub base url hit %url. Did anything go wrong with the apache redirect?', array('%url' => current_path())), [], WATCHDOG_ERROR);
   header("HTTP/1.0 404 Not Found");
   drupal_exit();
@@ -93,7 +93,7 @@ function sourcepoint_page_build() {
       $script .= "\nwindow._sp_.config.account_id = $account_id;";
     }
 
-    if ($pub_base = variable_get('sourcepoint_pub_base', '')) {
+    if ($pub_base = variable_get('sourcepoint_recovery_script_pub_base', '')) {
       $script .= "\nwindow._sp_.config.publisher_base = '$pub_base';";
     }
 
@@ -223,26 +223,26 @@ function sourcepoint_get_script($script_type, $form_state = []) {
 function _sourcepoint_get_script_options($script_type, $form_state = []) {
   switch ($script_type) {
     case 'recovery':
-      if (isset($form_state['input']['sourcepoint_pub_base'])) {
-        $pub_base = $form_state['input']['sourcepoint_pub_base'];
+      if (isset($form_state['input']['sourcepoint_recovery_script_pub_base'])) {
+        $pub_base = $form_state['input']['sourcepoint_recovery_script_pub_base'];
       }
       else {
         global $base_url;
-        $pub_base = trim(variable_get('sourcepoint_pub_base', $base_url . '/pub/base'), '/');
+        $pub_base = trim(variable_get('sourcepoint_recovery_script_pub_base', $base_url . '/pub/base'), '/');
       }
 
-      if (isset($form_state['input']['sourcepoint_pub_adserver'])) {
-        $pub_adserver = $form_state['input']['sourcepoint_pub_adserver'];
+      if (isset($form_state['input']['sourcepoint_recovery_script_pub_adserver'])) {
+        $pub_adserver = $form_state['input']['sourcepoint_recovery_script_pub_adserver'];
       }
       else {
-        $pub_adserver = variable_get('sourcepoint_pub_adserver', 'dfp');
+        $pub_adserver = variable_get('sourcepoint_recovery_script_pub_adserver', 'dfp');
       }
 
-      if (isset($form_state['input']['sourcepoint_env'])) {
-        $env = $form_state['input']['sourcepoint_env'];
+      if (isset($form_state['input']['sourcepoint_recovery_script_env'])) {
+        $env = $form_state['input']['sourcepoint_recovery_script_env'];
       }
       else {
-        $env = variable_get('sourcepoint_env', 'prod');
+        $env = variable_get('sourcepoint_recovery_script_env', 'prod');
       }
 
       if (isset($form_state['input']['sourcepoint_recovery_script_format'])) {

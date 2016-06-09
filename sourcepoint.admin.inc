@@ -85,7 +85,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#type' => 'fieldset',
     '#title' => t('Recovery script'),
   );
-  $form['recovery_script']['sourcepoint_pub_base'] = array(
+  $form['recovery_script']['sourcepoint_recovery_script_pub_base'] = array(
     '#title' => t('Pub url'),
     '#type' => 'textfield',
     '#default_value' => $recovery_script_options['pub_base'],
@@ -93,7 +93,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#description' => t('Full URL for the pubbase to be included in the returned CS-URL.'),
     '#required' => TRUE,
   );
-  $form['recovery_script']['sourcepoint_pub_adserver'] = array(
+  $form['recovery_script']['sourcepoint_recovery_script_pub_adserver'] = array(
     '#title' => t('Pub adserver'),
     '#type' => 'select',
     '#options' => array(
@@ -104,7 +104,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#description' => t('Specifies the publisher adserver support required.'),
     '#required' => TRUE,
   );
-  $form['recovery_script']['sourcepoint_env'] = array(
+  $form['recovery_script']['sourcepoint_recovery_script_env'] = array(
     '#title' => t('Environment'),
     '#type' => 'select',
     '#options' => array(

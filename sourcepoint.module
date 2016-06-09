@@ -48,6 +48,29 @@ function sourcepoint_page_build() {
   }
 
   if ($script = sourcepoint_get_script('bootstrap')) {
+
+    $script .= "\nwindow._sp_ = window._sp_ || {};";
+    $script .= "\nwindow._sp_.config = window._sp_.config || {};";
+
+    if ($account_id = variable_get('sourcepoint_account_id', '')) {
+      $script .= "\nwindow._sp_.config.account_id = $account_id;";
+    }
+
+    if ($pub_base = variable_get('sourcepoint_pub_base', '')) {
+      $script .= "\nwindow._sp_.config.publisher_base = '$pub_base';";
+    }
+
+    if ($landing_page = variable_get('sourcepoint_content_control_url', '')) {
+      $script .= "\nwindow._sp_.config.content_control_callback = function() {";
+      $script .= "\n\twindow.location.href = '$landing_page';\n};";
+    }
+
+    if (variable_get('sourcepoint_recovery_script_format', '') == 'cdn') {
+      if ($recovery_script = sourcepoint_get_script('recovery')) {
+        $script .= "\nwindow.spBootstrap('$recovery_script');";
+      }
+    }
+
     $element = array(
       '#tag' => 'script',
       '#weight' => 1,

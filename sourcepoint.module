@@ -55,22 +55,17 @@ function sourcepoint_page_build() {
   }
 }
 
-function _sourcepoint_get_endpoint($script_type) {
-  switch ($script_type) {
-    case 'recovery':
-      return 'cs_recovery';
-      break;
-
-    case 'bootstrap':
-      return 'bootstrap';
-      break;
-
-    default:
-      drupal_set_message(t('Script type "!type" is invalid.', array('!type' => $script_type)), 'error');
-  }
-}
-
-function _sourcepoint_fetch_script($script_type, $api_key = NULL, $options = NULL) {
+/**
+ * Function responsible to fetch the script from the server.
+ *
+ * @param      $script_type 'bootstrap or recovery'.
+ * @param null $api_key The api key provided by sourcepoint.
+ * @param null $options The options to go along with the request.
+ *
+ * @return null
+ * @throws Exception
+ */
+function sourcepoint_fetch_script($script_type, $api_key = NULL, $options = NULL) {
   if (is_null($options)) {
     // Get options for the script.
     $options = _sourcepoint_get_script_options($script_type);
@@ -91,6 +86,21 @@ function _sourcepoint_fetch_script($script_type, $api_key = NULL, $options = NUL
     }
   } catch (Exception $e) {
     throw $e;
+  }
+}
+
+function _sourcepoint_get_endpoint($script_type) {
+  switch ($script_type) {
+    case 'recovery':
+      return 'cs_recovery';
+      break;
+
+    case 'bootstrap':
+      return 'bootstrap';
+      break;
+
+    default:
+      drupal_set_message(t('Script type "!type" is invalid.', array('!type' => $script_type)), 'error');
   }
 }
 

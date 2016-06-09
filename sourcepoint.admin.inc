@@ -191,7 +191,7 @@ function _sourcepoint_update_script($form_state, $script_type) {
   variable_del('sourcepoint_' . $script_type . '_script');
 
   try {
-    $script = _sourcepoint_fetch_script($script_type, $api_key, $options);
+    $script = sourcepoint_fetch_script($script_type, $api_key, $options);
     if (isset($script)) {
       // Create key to store in settings.
       $key = _sourcepoint_build_script_key($options);

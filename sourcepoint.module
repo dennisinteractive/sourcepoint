@@ -67,15 +67,15 @@ function sourcepoint_page_build() {
 
     if (variable_get('sourcepoint_recovery_script_format', '') == 'cdn') {
       if ($recovery_script = sourcepoint_get_script('recovery')) {
-        $script .= "\nwindow.spBootstrap('$recovery_script');";
+        $recovery_script = str_replace('http://', '', $recovery_script);
+        $recovery_script = str_replace('https://', '', $recovery_script);
+        $script .= "\nwindow.spBootstrap('//$recovery_script');";
       }
     }
 
     $element = array(
       '#tag' => 'script',
       '#weight' => 1,
-      '#value_prefix' => "/* Bootstrap */\n<!--//--><![CDATA[//><!--",
-      '#value_suffix' => "\n//--><!]]>",
       '#value' => $script,
       '#attributes' => array(
         'type' => 'text/javascript',

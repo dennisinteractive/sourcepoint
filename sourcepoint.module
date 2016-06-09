@@ -47,11 +47,18 @@ function sourcepoint_page_build() {
     return;
   }
 
-  if ($script = variable_get('sourcepoint_recovery_script')) {
-    drupal_add_html_head(array(
-      '#type' => 'markup',
-      '#markup' => $script . PHP_EOL,
-    ), 'sourcepoint');
+  if ($script = sourcepoint_get_script('bootstrap')) {
+    $element = array(
+      '#tag' => 'script',
+      '#weight' => 1,
+      '#value_prefix' => "/* Bootstrap */\n<!--//--><![CDATA[//><!--",
+      '#value_suffix' => "\n//--><!]]>",
+      '#value' => $script,
+      '#attributes' => array(
+        'type' => 'text/javascript',
+      ),
+    );
+    drupal_add_html_head($element, 'sourcepoint');
   }
 }
 
@@ -125,6 +132,26 @@ function _sourcepoint_set_message($message, $class) {
  */
 function _sourcepoint_build_script_key($options) {
   return implode('_', array_values($options));
+}
+
+/**
+ * Helper to get the script from local storage.
+ *
+ * @param null  $script_type
+ * @param array $form_state If this argument is passed, the values will be
+ * retrieved from it. Default is to retrieve from settings.
+ *
+ * @return bool or the script
+ */
+function sourcepoint_get_script($script_type, $form_state = []) {
+  $script_value = variable_get('sourcepoint_' . $script_type . '_script');
+  $options = _sourcepoint_get_script_options($script_type, $form_state);
+  $key = _sourcepoint_build_script_key($options);
+  if (isset($script_value[$key])) {
+    return $script_value[$key];
+  }
+
+  return FALSE;
 }
 
 /**

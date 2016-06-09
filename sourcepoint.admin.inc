@@ -55,7 +55,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
   );
   $form['bootstrap_script']['bootstrap_script_status'] = array(
     '#type' => 'fieldset',
-    '#title' => _sourcepoint_get_script_status($form_state, 'bootstrap'),
+    '#title' => _sourcepoint_get_script_status('bootstrap', $form_state),
     '#prefix' => '<div id="bootstrap-script">',
     '#suffix' => '</div>',
   );
@@ -120,7 +120,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
   );
   $form['recovery_script']['recovery_script_status'] = array(
     '#type' => 'fieldset',
-    '#title' => _sourcepoint_get_script_status($form_state, 'recovery'),
+    '#title' => _sourcepoint_get_script_status('recovery', $form_state),
     '#prefix' => '<div id="recovery-script">',
     '#suffix' => '</div>',
   );
@@ -144,20 +144,20 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
  */
 function sourcepoint_admin_settings_form_validate($form, &$form_state) {
   // If the script hasn't been retrieved using Update button, do it now.
-  if (!_sourcepoint_script_available($form_state, 'recovery')) {
-    _sourcepoint_update_script($form_state, 'recovery');
+  if (!sourcepoint_get_script('recovery', $form_state)) {
+    _sourcepoint_update_script('recovery', $form_state);
   }
   // If we still don't have a script, display error message.
-  if (!_sourcepoint_script_available($form_state, 'recovery')) {
+  if (!sourcepoint_get_script('recovery', $form_state)) {
     form_set_error('recovery_script_status', t('Recovery script not available.'));
   }
 
   // If the script hasn't been retrieved using Update button, do it now.
-  if (!_sourcepoint_script_available($form_state, 'bootstrap')) {
-    _sourcepoint_update_script($form_state, 'bootstrap');
+  if (!sourcepoint_get_script('bootstrap', $form_state)) {
+    _sourcepoint_update_script('bootstrap', $form_state);
   }
   // If we still don't have a script, display error message.
-  if (!_sourcepoint_script_available($form_state, 'bootstrap')) {
+  if (!sourcepoint_get_script('bootstrap', $form_state)) {
     form_set_error('bootstrap_script_status', t('Bootstrap script not available.'));
   }
 }
@@ -172,7 +172,7 @@ function sourcepoint_admin_settings_form_validate($form, &$form_state) {
  */
 function sourcepoint_update_bootstrap_script_callback($form, $form_state) {
   $script_type = 'bootstrap';
-  $message = _sourcepoint_update_script($form_state, $script_type);
+  $message = _sourcepoint_update_script($script_type, $form_state);
   $form['bootstrap_script']['bootstrap_script_status']['#title'] = $message;
 
   return $form['bootstrap_script']['bootstrap_script_status'];
@@ -188,7 +188,7 @@ function sourcepoint_update_bootstrap_script_callback($form, $form_state) {
  */
 function sourcepoint_update_recovery_script_callback($form, $form_state) {
   $script_type = 'recovery';
-  $message = _sourcepoint_update_script($form_state, $script_type);
+  $message = _sourcepoint_update_script($script_type, $form_state);
   $form['recovery_script']['recovery_script_status']['#title'] = $message;
 
   return $form['recovery_script']['recovery_script_status'];
@@ -202,7 +202,7 @@ function sourcepoint_update_recovery_script_callback($form, $form_state) {
  *
  * @return string
  */
-function _sourcepoint_update_script($form_state, $script_type) {
+function _sourcepoint_update_script($script_type, $form_state) {
   $options = _sourcepoint_get_script_options($script_type, $form_state);
   $api_key = $form_state['input']['sourcepoint_api_key'];
   variable_del('sourcepoint_' . $script_type . '_script');
@@ -215,7 +215,7 @@ function _sourcepoint_update_script($form_state, $script_type) {
       variable_set('sourcepoint_' . $script_type . '_script', [$key => $script]);
 
       // Update status.
-      return _sourcepoint_get_script_status($form_state, $script_type);
+      return _sourcepoint_get_script_status($script_type, $form_state);
     }
   } catch (Exception $e) {
     // Update status with a custom message;
@@ -227,26 +227,6 @@ function _sourcepoint_update_script($form_state, $script_type) {
 }
 
 /**
- * Helper to check if the script for the selected options is available locally.
- *
- * @param array $form_state If this argument is passed, the values will be retrieved
- * from it. Default is to retrieve from settings.
- * @param null  $script_type
- *
- * @return bool
- */
-function _sourcepoint_script_available($form_state = [], $script_type) {
-  $script_value = variable_get('sourcepoint_' . $script_type . '_script');
-  $options = _sourcepoint_get_script_options($script_type, $form_state);
-  $key = _sourcepoint_build_script_key($options);
-  if (isset($script_value[$key])) {
-    return TRUE;
-  }
-
-  return FALSE;
-}
-
-/**
  * Helper to create the Html message status.
  *
  * @param array $form_state
@@ -254,8 +234,8 @@ function _sourcepoint_script_available($form_state = [], $script_type) {
  *
  * @return string
  */
-function _sourcepoint_get_script_status($form_state, $script_type) {
-  if (_sourcepoint_script_available($form_state, $script_type)) {
+function _sourcepoint_get_script_status($script_type, $form_state) {
+  if (sourcepoint_get_script($script_type, $form_state)) {
     return _sourcepoint_set_message('Script is stored locally.', 'ok');
   }
   else {

@@ -38,6 +38,14 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#description' => t('The Url of the landing page. i.e. http://www.example.com/page'),
     '#required' => TRUE,
   );
+  $form['sourcepoint_recovery_script_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Recovery script path.'),
+    '#default_value' => variable_get('sourcepoint_recovery_script_path', substr(md5(time()), 0, 10) . '.js'),
+    '#size' => 20,
+    '#description' => t('The raw content of the recovery javascript will be returned from this path.'),
+    '#required' => TRUE,
+  );
 
   // Bootstrap script options.
   $bootstrap_script_options = _sourcepoint_get_script_options('bootstrap', $form_state);
@@ -112,7 +120,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#title' => t('Script format'),
     '#options' => array(
       'js' => t('Inline'),
-      'cdn' => t('CDN'),
+      /*'cdn' => t('CDN'), deprecated */
     ),
     '#default_value' => $recovery_script_options['fmt'],
     '#required' => TRUE,
@@ -159,6 +167,41 @@ function sourcepoint_admin_settings_form_validate($form, &$form_state) {
   // If we still don't have a script, display error message.
   if (!sourcepoint_get_script('bootstrap', $form_state)) {
     form_set_error('bootstrap_script_status', t('Bootstrap script not available.'));
+  }
+
+  // Sanitize and normalize path.
+  $src_path = $form_state['input']['sourcepoint_recovery_script_path'];
+  $src_path = trim($src_path, '/');
+  $src_path = substr($src_path, 0, strpos($src_path, '.js'));
+  $src_path = $src_path . '.js';
+
+  // Check that the src path changed and it doesn't exist as a menu item.
+  if ($current_src_path = variable_get('sourcepoint_recovery_script_path')) {
+    if ($current_src_path != $src_path) {
+      $src_path_changed = $src_path;
+    }
+    else {
+      $src_path_changed = FALSE;
+    }
+  }
+  else {
+    $src_path_changed = $src_path;
+  }
+  if ($src_path_changed) {
+    if (drupal_valid_path($src_path_changed)) {
+      // Path already exists.
+      form_set_error('sourcepoint_recovery_script_path', t('Path already exists.'));
+    }
+    else {
+      // Update form.
+      form_set_value($form['sourcepoint_recovery_script_path'], $src_path_changed, $form_state);
+
+      // Store new path.
+      variable_set('sourcepoint_recovery_script_path', $src_path_changed);
+
+      // Clear menu cache.
+      menu_rebuild();
+    }
   }
 }
 

@@ -30,8 +30,24 @@ function sourcepoint_menu() {
     'type' => MENU_NORMAL_ITEM,
     'file' => 'sourcepoint.admin.inc',
   );
+  if ($recovery_script_path = variable_get('sourcepoint_recovery_script_path')) {
+    $items[$recovery_script_path] = array(
+      'page callback' => 'sourcepoint_recovery_script_path',
+      'access callback' => TRUE,
+      'type' => MENU_CALLBACK,
+    );
+  }
 
   return $items;
+}
+
+/**
+ * Page callback for recovery script path.
+ */
+function sourcepoint_recovery_script_path() {
+  drupal_add_http_header('Content-Type', 'text/javascript');
+  print sourcepoint_get_script('recovery');
+  drupal_exit();
 }
 
 /**
@@ -65,12 +81,9 @@ function sourcepoint_page_build() {
       $script .= "\n\twindow.location.href = '$landing_page';\n};";
     }
 
-    if (variable_get('sourcepoint_recovery_script_format', '') == 'cdn') {
-      if ($recovery_script = sourcepoint_get_script('recovery')) {
-        $recovery_script = str_replace('http://', '', $recovery_script);
-        $recovery_script = str_replace('https://', '', $recovery_script);
-        $script .= "\nwindow.spBootstrap('//$recovery_script');";
-      }
+    if ($recovery_script_path = variable_get('sourcepoint_recovery_script_path')) {
+      $path = url($recovery_script_path, ['absolute' => TRUE]);
+      $script .= "\nwindow.spBootstrap('$path');";
     }
 
     $element = array(
@@ -215,7 +228,7 @@ function _sourcepoint_get_script_options($script_type, $form_state = []) {
         $fmt = $form_state['input']['sourcepoint_recovery_script_format'];
       }
       else {
-        $fmt = variable_get('sourcepoint_recovery_script_format', 'cdn');
+        $fmt = variable_get('sourcepoint_recovery_script_format', 'js');
       }
 
       return [

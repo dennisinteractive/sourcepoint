@@ -30,9 +30,21 @@ function sourcepoint_menu() {
     'type' => MENU_NORMAL_ITEM,
     'file' => 'sourcepoint.admin.inc',
   );
+  // Page callback for src.
   if ($recovery_script_path = variable_get('sourcepoint_recovery_script_path')) {
     $items[$recovery_script_path] = array(
       'page callback' => 'sourcepoint_recovery_script_path',
+      'access callback' => TRUE,
+      'type' => MENU_CALLBACK,
+    );
+  }
+  // Page callback for pub_base.
+  if ($pub_base = variable_get('sourcepoint_pub_base')) {
+    $pub_base = parse_url($pub_base);
+    $pub_base = $pub_base['path'];
+    $pub_base = trim($pub_base, '/');
+    $items[$pub_base] = array(
+      'page callback' => 'sourcepoint_pub_base_page',
       'access callback' => TRUE,
       'type' => MENU_CALLBACK,
     );
@@ -47,6 +59,15 @@ function sourcepoint_menu() {
 function sourcepoint_recovery_script_path() {
   drupal_add_http_header('Content-Type', 'text/javascript');
   print sourcepoint_get_script('recovery');
+  drupal_exit();
+}
+
+/**
+ * Page callback for recovery script path.
+ */
+function sourcepoint_pub_base_page() {
+  watchdog('sourcepoint', t('Pub base url hit %url. Did anything go wrong with the apache redirect?', array('%url' => current_path())), [], WATCHDOG_ERROR);
+  header("HTTP/1.0 404 Not Found");
   drupal_exit();
 }
 

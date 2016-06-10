@@ -114,7 +114,13 @@ function sourcepoint_dfp_theme_registry_alter(&$theme_registry) {
 function sourcepoint_dfp_preprocess_html_tag(&$vars) {
   $element = &$vars['element'];
   if (isset($element['#value']) && strpos($element['#value'], 'googletag.cmd.push') !== FALSE) {
-    $element['#attributes']['data-dfp'] = 'data-dfp';
+    $settings = variable_get('sourcepoint_dfp_slots_recovery', []);
+    foreach ($settings as $tag_name => $enabled) {
+      if ($enabled && strpos($element['#value'], 'googletag.slots["' . $tag_name . '"]')) {
+        $element['#attributes']['data-dfp'] = 'data-dfp';
+        break;
+      }
+    }
   }
 }
 
@@ -122,6 +128,13 @@ function sourcepoint_dfp_preprocess_html_tag(&$vars) {
  * Implements hook_preprocess_dfp_tag().
  */
 function sourcepoint_dfp_preprocess_dfp_tag(&$vars) {
-  $vars['theme_hook_suggestions'][] = 'dfp_tag__sourcepoint';
-  $vars['sourcepoint_attributes']['data-dfp'] = ['data-dfp'];
+  $vars['sourcepoint_attributes'] = [];
+  $settings = variable_get('sourcepoint_dfp_slots_recovery', []);
+  foreach ($settings as $tag_name => $enabled) {
+    if ($enabled && $vars['tag']->machinename == $tag_name) {
+      $vars['theme_hook_suggestions'][] = 'dfp_tag__sourcepoint';
+      $vars['sourcepoint_attributes']['data-dfp'] = ['data-dfp'];
+      break;
+    }
+  }
 }

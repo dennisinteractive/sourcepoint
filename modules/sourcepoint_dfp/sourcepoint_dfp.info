@@ -1,0 +1,5 @@
+name = Sourcepoint DFP
+description = Sourcepoint integration for DFP
+package = Advertising
+core = 7.x
+dependencies[] = dfp

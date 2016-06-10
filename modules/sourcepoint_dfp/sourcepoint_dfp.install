@@ -1,0 +1,12 @@
+<?php
+/**
+ * @file
+ * Installation file for the Sourcepoint DFP module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function dfp_respond_install() {
+
+}

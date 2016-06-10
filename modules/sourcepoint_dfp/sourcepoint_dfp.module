@@ -1,0 +1,58 @@
+<?php
+/**
+ * @file
+ * Main module file forSourcepoint DFP.
+ */
+
+/**
+ * Implements hook_form_alter().
+ */
+function sourcepoint_dfp_form_ctools_export_ui_edit_item_form_alter(&$form, &$form_state, $form_id) {
+  if (isset($form_state['plugin']['schema']) && $form_state['plugin']['schema']='dfp_tags') {
+
+    $tag = ($form_state['op'] == 'add' ? $form_state['item'] : $form_state['item']->raw);
+
+    $form['sourcepoint_dfp'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Sourcepoint'),
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+      '#group' => 'settings',
+    );
+    // Need to pass the machine name because dfp doesn't do it.
+    $form['sourcepoint_dfp']['sourcepoint_slot_name'] = array(
+      '#type' => 'hidden',
+      '#value' => $tag->machinename,
+    );
+    // Get array of slots recovery.
+    $settings = variable_get('sourcepoint_dfp_slots_recovery', []);
+    $form['sourcepoint_dfp']['sourcepoint_recovery'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Enable recovery'),
+      '#description' => t('Enable recovery for this ad tag'),
+      '#default_value' => isset($settings[$tag->machinename]) ? $settings[$tag->machinename] : '0',
+    );
+
+    $form['#submit'][] = '_sourcepoint_dfp_tag_form_submit';
+  }
+}
+
+/**
+ * Form callback for DFP ad tag UI.
+ *
+ * @param $form
+ * @param $form_state
+ */
+function _sourcepoint_dfp_tag_form_submit(&$form, &$form_state) {
+  if (isset($form_state['input']['sourcepoint_slot_name'])) {
+    // Get the slot name.
+    $slot_name = $form_state['input']['sourcepoint_slot_name'];
+    // Get array of slots recovery.
+    $settings = variable_get('sourcepoint_dfp_slots_recovery', []);
+    // Update settings.
+    $settings[$slot_name] = isset($form_state['input']['sourcepoint_recovery'])
+      ? $form_state['input']['sourcepoint_recovery']
+      : '0';
+    variable_set('sourcepoint_dfp_slots_recovery', $settings);
+  }
+}

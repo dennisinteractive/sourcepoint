@@ -109,7 +109,7 @@ function sourcepoint_page_build() {
 
     $element = array(
       '#tag' => 'script',
-      '#weight' => 1,
+      '#weight' => 1010,
       '#value' => $script,
       '#attributes' => array(
         'type' => 'text/javascript',

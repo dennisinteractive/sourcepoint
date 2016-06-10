@@ -95,7 +95,7 @@ function sourcepoint_dfp_page_build() {
 
   $element = array(
     '#tag' => 'script',
-    '#weight' => 2,
+    '#weight' => 1100,
     '#value' => $script,
     '#attributes' => array(
       'type' => 'text/javascript',

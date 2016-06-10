@@ -7,6 +7,18 @@
 /**
  * Implements hook_install().
  */
-function dfp_respond_install() {
+function sourcepoint_dfp_install() {
+  $settings = ['sourcepoint_dfp_slots_recovery'];
+  $tags = dfp_tag_load_all();
+  foreach ($tags as $tag) {
+    $settings['sourcepoint_dfp_slots_recovery'][$tag->machinename] = 0;
+  }
+  variable_set('sourcepoint_dfp_slots_recovery', $settings);
+}
 
+/**
+ * Implements hook_uninstall().
+ */
+function sourcepoint_dfp_uninstall() {
+  variable_del('sourcepoint_dfp_slots_recovery');
 }

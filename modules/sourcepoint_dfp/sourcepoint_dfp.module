@@ -8,7 +8,7 @@
  * Implements hook_form_alter().
  */
 function sourcepoint_dfp_form_ctools_export_ui_edit_item_form_alter(&$form, &$form_state, $form_id) {
-  if (isset($form_state['plugin']['schema']) && $form_state['plugin']['schema']='dfp_tags') {
+  if (isset($form_state['plugin']['schema']) && $form_state['plugin']['schema'] = 'dfp_tags') {
 
     $tag = ($form_state['op'] == 'add' ? $form_state['item'] : $form_state['item']->raw);
 
@@ -56,3 +56,51 @@ function _sourcepoint_dfp_tag_form_submit(&$form, &$form_state) {
     variable_set('sourcepoint_dfp_slots_recovery', $settings);
   }
 }
+
+/**
+ * Implements hook_page_build().
+ */
+function sourcepoint_dfp_page_build() {
+
+  if (path_is_admin(current_path())) {
+    return;
+  }
+
+  if (!variable_get('sourcepoint_enabled', 1)) {
+    return;
+  }
+
+  $script = "";
+  $script .= "document.addEventListener('sp.blocking', function (e) {";
+  $script .= "if (gptLoadComplete === true && attemptedRecovery === false) {";
+  $script .= "attemptedRecovery = true;";
+  $script .= "var slots = window.googletag.slots;";
+  $script .= "window.googletag = {};";
+  $script .= "window.googletag.cmd = [];";
+  $script .= "window.googletag.slots = slots;";
+  $script .= "var scriptsArray = ['console.log(\'Firing Tags\');'];";
+  $script .= "[].slice.call(document.querySelectorAll('script[data-dfp]')).forEach(function(s) {";
+  $script .= "scriptsArray.push(s.innerText.replace('<!--//--><![CDATA[//><!--', '').replace('//--><!]]>', ''));";
+  $script .= "});";
+  $script .= "var newScripts = scriptsArray.join(';');";
+  $script .= "var scriptEl = document.createElement('script');";
+  $script .= "scriptEl.id = 'soucePointAds';";
+  $script .= "scriptEl.innerHTML = newScripts;";
+  $script .= "document.head.appendChild(scriptEl);";
+  $script .= "window._sp_.dfp.loadGPT();";
+  $script .= "}";
+  $script .= "});";
+  $script .= "document.addEventListener('sp.not_blocking', function (e) {";
+  $script .= "});";
+
+  $element = array(
+    '#tag' => 'script',
+    '#weight' => 2,
+    '#value' => $script,
+    '#attributes' => array(
+      'type' => 'text/javascript',
+    ),
+  );
+  drupal_add_html_head($element, 'sourcepoint_dfp');
+}
+

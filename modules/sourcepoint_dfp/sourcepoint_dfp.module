@@ -38,6 +38,30 @@ function sourcepoint_dfp_form_ctools_export_ui_edit_item_form_alter(&$form, &$fo
 }
 
 /**
+ * Implements hook_form_alter().
+ */
+function sourcepoint_dfp_form_sourcepoint_admin_settings_form_alter(&$form, &$form_state, $form_id) {
+
+  $form['sourcepoint_dfp'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Sourcepoint DFP'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#group' => 'settings',
+  );
+  $form['sourcepoint_dfp']['sourcepoint_dfp_data_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Data name'),
+    '#size' => 10,
+    '#description' => t('The name of the data attribute to be added to the script tags.'),
+    '#default_value' => variable_get('sourcepoint_dfp_data_name', 'data-dfp'),
+  );
+
+  $form['#submit'][] = '_sourcepoint_dfp_tag_form_submit';
+
+}
+
+/**
  * Form callback for DFP ad tag UI.
  *
  * @param $form
@@ -55,6 +79,9 @@ function _sourcepoint_dfp_tag_form_submit(&$form, &$form_state) {
       : '0';
     variable_set('sourcepoint_dfp_slots_recovery', $settings);
   }
+  if (isset($form_state['input']['sourcepoint_dfp_data_name'])) {
+    variable_set('sourcepoint_dfp_data_name', $form_state['input']['sourcepoint_dfp_data_name']);
+  }
 }
 
 /**
@@ -70,6 +97,8 @@ function sourcepoint_dfp_page_build() {
     return;
   }
 
+  $data_name = variable_get('sourcepoint_dfp_data_name', 'data-dfp');
+
   $script = "";
   $script .= "document.addEventListener('sp.blocking', function (e) {";
   $script .= "if (gptLoadComplete === true && attemptedRecovery === false) {";
@@ -79,7 +108,7 @@ function sourcepoint_dfp_page_build() {
   $script .= "window.googletag.cmd = [];";
   $script .= "window.googletag.slots = slots;";
   $script .= "var scriptsArray = ['console.log(\'Firing Tags\');'];";
-  $script .= "[].slice.call(document.querySelectorAll('script[data-dfp]')).forEach(function(s) {";
+  $script .= "[].slice.call(document.querySelectorAll('script[$data_name]')).forEach(function(s) {";
   $script .= "scriptsArray.push(s.innerText.replace('<!--//--><![CDATA[//><!--', '').replace('//--><!]]>', ''));";
   $script .= "});";
   $script .= "var newScripts = scriptsArray.join(';');";
@@ -117,7 +146,8 @@ function sourcepoint_dfp_preprocess_html_tag(&$vars) {
     $settings = variable_get('sourcepoint_dfp_slots_recovery', []);
     foreach ($settings as $tag_name => $enabled) {
       if ($enabled && strpos($element['#value'], 'googletag.slots["' . $tag_name . '"]')) {
-        $element['#attributes']['data-dfp'] = 'data-dfp';
+        $data_name = variable_get('sourcepoint_dfp_data_name', 'data-dfp');
+        $element['#attributes'][$data_name] = $data_name;
         break;
       }
     }
@@ -133,7 +163,8 @@ function sourcepoint_dfp_preprocess_dfp_tag(&$vars) {
   foreach ($settings as $tag_name => $enabled) {
     if ($enabled && $vars['tag']->machinename == $tag_name) {
       $vars['theme_hook_suggestions'][] = 'dfp_tag__sourcepoint';
-      $vars['sourcepoint_attributes']['data-dfp'] = ['data-dfp'];
+      $data_name = variable_get('sourcepoint_dfp_data_name', 'data-dfp');
+      $vars['sourcepoint_attributes'][$data_name] = $data_name;
       break;
     }
   }

@@ -21,4 +21,5 @@ function sourcepoint_dfp_install() {
  */
 function sourcepoint_dfp_uninstall() {
   variable_del('sourcepoint_dfp_slots_recovery');
+  variable_del('sourcepoint_dfp_data_name');
 }

@@ -167,6 +167,11 @@ function sourcepoint_dfp_page_build() {
  * @return mixed
  */
 function sourcepoint_dfp_theme($existing, $type, $theme, $path) {
+  // Use default DFP theme when disabled.
+  if (!variable_get('sourcepoint_enabled', 1)) {
+    return array();
+  }
+
   $theme_hooks = array();
 
   // Override dfp_theme() so that templates are found in this module instead.
@@ -183,6 +188,10 @@ function sourcepoint_dfp_theme($existing, $type, $theme, $path) {
  * Implements hook_preprocess_html_tag().
  */
 function sourcepoint_dfp_preprocess_html_tag(&$vars) {
+  if (!variable_get('sourcepoint_enabled', 1)) {
+    return;
+  }
+
   $element = &$vars['element'];
   if (isset($element['#value']) && strpos($element['#value'], 'googletag.cmd.push') !== FALSE) {
     // Get configured data attribute name.
@@ -224,6 +233,12 @@ function _sourcepoint_dfp_is_tag_js($js, $tag_name) {
  * Implements hook_preprocess_dfp_tag().
  */
 function sourcepoint_dfp_preprocess_dfp_tag(&$vars) {
+  if (!variable_get('sourcepoint_enabled', 1)) {
+    // Set empty attributes to prevent any errors on templates expecting them.
+    $vars['sourcepoint_attributes'] = array();
+    return;
+  }
+
   $vars['sourcepoint_attributes'] = [];
   $settings = variable_get('sourcepoint_dfp_slots_recovery', []);
   foreach ($settings as $tag_name => $enabled) {

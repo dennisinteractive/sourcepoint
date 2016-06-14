@@ -228,7 +228,7 @@ function _sourcepoint_get_script_options($script_type, $form_state = []) {
       }
       else {
         global $base_url;
-        $pub_base = trim(variable_get('sourcepoint_recovery_script_pub_base', $base_url . '/pub/base'), '/');
+        $pub_base = rtrim(variable_get('sourcepoint_recovery_script_pub_base', $base_url . '/pub/base'), '/');
       }
 
       if (isset($form_state['input']['sourcepoint_recovery_script_pub_adserver'])) {

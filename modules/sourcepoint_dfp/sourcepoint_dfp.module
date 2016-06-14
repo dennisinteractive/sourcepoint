@@ -100,6 +100,30 @@ function sourcepoint_dfp_page_build() {
   $data_name = variable_get('sourcepoint_dfp_data_name', 'data-dfp');
 
   $script = "";
+  $script .= "var attemptedRecovery = false;";
+  $script .= "var gptLoadComplete = false;";
+  $script .= "var gads = document.createElement(\"script\");";
+  $script .= "gads.async = true;";
+  $script .= "gads.type = \"text/javascript\";";
+  $script .= "var useSSL = \"https:\" == document.location.protocol;";
+  $script .= "gads.src = (useSSL ? \"https:\" : \"http:\") + \"//www.googletagservices.com/tag/js/gpt.js\";";
+  $script .= "gads.onload = gads.onerror = function () {";
+  $script .= "gptLoadComplete = true;";
+  $script .= "};";
+  $script .= "var node = document.getElementsByTagName(\"script\")[0];";
+  $script .= "node.parentNode.insertBefore(gads, node);";
+
+  $element = array(
+    '#tag' => 'script',
+    '#weight' => 1000,
+    '#value' => $script,
+    '#attributes' => array(
+      'type' => 'text/javascript',
+    ),
+  );
+  drupal_add_html_head($element, 'sourcepoint_dfp_init');
+
+  $script = "";
   $script .= "document.addEventListener('sp.blocking', function (e) {";
   $script .= "if (gptLoadComplete === true && attemptedRecovery === false) {";
   $script .= "attemptedRecovery = true;";
@@ -107,7 +131,7 @@ function sourcepoint_dfp_page_build() {
   $script .= "window.googletag = {};";
   $script .= "window.googletag.cmd = [];";
   $script .= "window.googletag.slots = slots;";
-  $script .= "var scriptsArray = ['console.log(\'Firing Tags\');'];";
+  $script .= "var scriptsArray = [];";
   $script .= "[].slice.call(document.querySelectorAll('script[$data_name]')).forEach(function(s) {";
   $script .= "scriptsArray.push(s.innerText.replace('<!--//--><![CDATA[//><!--', '').replace('//--><!]]>', ''));";
   $script .= "});";
@@ -130,11 +154,29 @@ function sourcepoint_dfp_page_build() {
       'type' => 'text/javascript',
     ),
   );
-  drupal_add_html_head($element, 'sourcepoint_dfp');
+  drupal_add_html_head($element, 'sourcepoint_dfp_deliver');
 }
 
-function sourcepoint_dfp_theme_registry_alter(&$theme_registry) {
-  $theme_registry['dfp_tag']['template'] = drupal_get_path('module', 'sourcepoint_dfp') . '/theme/dfp_tag__sourcepoint';
+/**
+ * Implements hook_theme().
+ *
+ * @param $existing
+ * @param $type
+ * @param $theme
+ * @param $path
+ * @return mixed
+ */
+function sourcepoint_dfp_theme($existing, $type, $theme, $path) {
+  $theme_hooks = array();
+
+  // Override dfp_theme() so that templates are found in this module instead.
+  if ($dfp_theme_hooks = module_invoke('dfp', 'theme', $existing, $type, $theme, $path)) {
+    if (isset($dfp_theme_hooks['dfp_tag'])) {
+      $theme_hooks['dfp_tag'] = $dfp_theme_hooks['dfp_tag'];
+    }
+  }
+
+  return $theme_hooks;
 }
 
 /**
@@ -143,15 +185,39 @@ function sourcepoint_dfp_theme_registry_alter(&$theme_registry) {
 function sourcepoint_dfp_preprocess_html_tag(&$vars) {
   $element = &$vars['element'];
   if (isset($element['#value']) && strpos($element['#value'], 'googletag.cmd.push') !== FALSE) {
+    // Get configured data attribute name.
+    $data_name = variable_get('sourcepoint_dfp_data_name', 'data-dfp');
+
+    // Add recovery attribute to ad tags enabled for recovery.
     $settings = variable_get('sourcepoint_dfp_slots_recovery', []);
     foreach ($settings as $tag_name => $enabled) {
-      if ($enabled && strpos($element['#value'], 'googletag.slots["' . $tag_name . '"]')) {
-        $data_name = variable_get('sourcepoint_dfp_data_name', 'data-dfp');
+      if ($enabled && _sourcepoint_dfp_is_tag_js($element['#value'], $tag_name)) {
         $element['#attributes'][$data_name] = $data_name;
         break;
       }
     }
+    // Add recovery attribute to global config.
+    if (strpos($element['#value'], 'googletag.pubads().enableAsyncRendering()')) {
+      $element['#attributes'][$data_name] = $data_name;
+    }
   }
+}
+
+/**
+ * Helper to check if provided JS belongs to provided tag.
+ *
+ * @param $js
+ * @param $tag_name
+ * @return bool
+ */
+function _sourcepoint_dfp_is_tag_js($js, $tag_name) {
+  if (strpos($js, 'googletag.slots["' . $tag_name . '"]')) {
+    return TRUE;
+  }
+  if (strpos($js, 'googletag.slots.' . $tag_name)) {
+    return TRUE;
+  }
+  return FALSE;
 }
 
 /**
@@ -162,7 +228,6 @@ function sourcepoint_dfp_preprocess_dfp_tag(&$vars) {
   $settings = variable_get('sourcepoint_dfp_slots_recovery', []);
   foreach ($settings as $tag_name => $enabled) {
     if ($enabled && $vars['tag']->machinename == $tag_name) {
-      $vars['theme_hook_suggestions'][] = 'dfp_tag__sourcepoint';
       $data_name = variable_get('sourcepoint_dfp_data_name', 'data-dfp');
       $vars['sourcepoint_attributes'][$data_name] = $data_name;
       break;

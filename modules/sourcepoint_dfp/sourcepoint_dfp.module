@@ -100,32 +100,17 @@ function sourcepoint_dfp_page_build() {
   $data_name = variable_get('sourcepoint_dfp_data_name', 'data-dfp');
 
   $script = "";
-  $script .= "var attemptedRecovery = false;";
-  $script .= "var gptLoadComplete = false;";
-  $script .= "var gads = document.createElement(\"script\");";
-  $script .= "gads.async = true;";
-  $script .= "gads.type = \"text/javascript\";";
-  $script .= "var useSSL = \"https:\" == document.location.protocol;";
-  $script .= "gads.src = (useSSL ? \"https:\" : \"http:\") + \"//www.googletagservices.com/tag/js/gpt.js\";";
-  $script .= "gads.onload = gads.onerror = function () {";
-  $script .= "gptLoadComplete = true;";
-  $script .= "};";
-  $script .= "var node = document.getElementsByTagName(\"script\")[0];";
-  $script .= "node.parentNode.insertBefore(gads, node);";
 
-  $element = array(
-    '#tag' => 'script',
-    '#weight' => 1000,
-    '#value' => $script,
-    '#attributes' => array(
-      'type' => 'text/javascript',
-    ),
-  );
-  drupal_add_html_head($element, 'sourcepoint_dfp_init');
+  // Blocking event.
+  // Re-initialize GPT on blocking event.
+  $script .= "document.addEventListener('sp.blocking', function (e) { isBlocking = true; spInitSlots(); });";
 
-  $script = "";
-  $script .= "document.addEventListener('sp.blocking', function (e) {";
-  $script .= "if (gptLoadComplete === true && attemptedRecovery === false) {";
+  // Not blocking event.
+  $script .= "document.addEventListener('sp.not_blocking', function (e) {});";
+
+  // Function to re-initialize GPT.
+  $script .= "function spInitSlots() {";
+  $script .= "if (gptLoadComplete === true && attemptedRecovery === false && isBlocking === true) {";
   $script .= "attemptedRecovery = true;";
   $script .= "var slots = window.googletag.slots;";
   $script .= "window.googletag = {};";
@@ -142,13 +127,11 @@ function sourcepoint_dfp_page_build() {
   $script .= "document.head.appendChild(scriptEl);";
   $script .= "window._sp_.dfp.loadGPT();";
   $script .= "}";
-  $script .= "});";
-  $script .= "document.addEventListener('sp.not_blocking', function (e) {";
-  $script .= "});";
+  $script .= "}";
 
   $element = array(
     '#tag' => 'script',
-    '#weight' => 1100,
+    '#weight' => 1015,
     '#value' => $script,
     '#attributes' => array(
       'type' => 'text/javascript',
@@ -193,6 +176,8 @@ function sourcepoint_dfp_preprocess_html_tag(&$vars) {
   }
 
   $element = &$vars['element'];
+
+  // Add recovery attributes.
   if (isset($element['#value']) && strpos($element['#value'], 'googletag.cmd.push') !== FALSE) {
     // Get configured data attribute name.
     $data_name = variable_get('sourcepoint_dfp_data_name', 'data-dfp');
@@ -206,9 +191,22 @@ function sourcepoint_dfp_preprocess_html_tag(&$vars) {
       }
     }
     // Add recovery attribute to global config.
-    if (strpos($element['#value'], 'googletag.pubads().enableAsyncRendering()')) {
+    if (strpos($element['#value'], 'googletag.enableServices()')) {
       $element['#attributes'][$data_name] = $data_name;
     }
+  }
+
+  if (isset($element['#value']) && strpos($element['#value'], 'gads.src') > 0) {
+    // Prepend with flags.
+    $element['#value'] = "var attemptedRecovery = false, gptLoadComplete = false, isBlocking = false;" . $element['#value'];
+
+    // Add onload callback to GPT.
+    $script = "gads.onload = gads.onerror = function () {";
+    $script .= "gptLoadComplete = true;";
+    $script .= "spInitSlots();";
+    $script .= "};";
+    $script .= 'gads.src';
+    $element['#value'] = str_replace('gads.src', $script, $element['#value']);
   }
 }
 
@@ -248,4 +246,11 @@ function sourcepoint_dfp_preprocess_dfp_tag(&$vars) {
       break;
     }
   }
+}
+
+/**
+ * Implements hook_sourcepoint_js_config_alter().
+ */
+function sourcepoint_dfp_sourcepoint_js_config_alter(&$config) {
+  $config['gpt_auto_load'] = 'false';
 }

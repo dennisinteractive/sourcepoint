@@ -89,17 +89,25 @@ function sourcepoint_page_build() {
     $script .= "\nwindow._sp_ = window._sp_ || {};";
     $script .= "\nwindow._sp_.config = window._sp_.config || {};";
 
+    $config = array();
+
     if ($account_id = variable_get('sourcepoint_account_id', '')) {
-      $script .= "\nwindow._sp_.config.account_id = $account_id;";
+      $config['account_id'] = intval($account_id);
     }
 
     if ($pub_base = variable_get('sourcepoint_recovery_script_pub_base', '')) {
-      $script .= "\nwindow._sp_.config.publisher_base = '$pub_base';";
+      $config['publisher_base'] = "'" . $pub_base . "'";
     }
 
     if ($landing_page = variable_get('sourcepoint_content_control_url', '')) {
-      $script .= "\nwindow._sp_.config.content_control_callback = function() {";
-      $script .= "\n\twindow.location.href = '$landing_page';\n};";
+      $config['content_control_callback'] = "function() { window.location.href = '$landing_page'}";
+    }
+
+    // Allow other modules to alter sourcepoint JS config.
+    drupal_alter('sourcepoint_js_config', $config);
+
+    foreach ($config as $key => $value) {
+      $script .= "\nwindow._sp_.config." . $key . " = " . $value . ";";
     }
 
     if ($recovery_script_path = variable_get('sourcepoint_recovery_script_path')) {

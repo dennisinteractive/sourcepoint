@@ -38,14 +38,6 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#description' => t('The Url of the landing page. i.e. http://www.example.com/page'),
     '#required' => TRUE,
   );
-  $form['sourcepoint_recovery_script_path'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Recovery script path.'),
-    '#default_value' => variable_get('sourcepoint_recovery_script_path', substr(md5(time()), 0, 10) . '.js'),
-    '#size' => 20,
-    '#description' => t('The raw content of the recovery javascript will be returned from this path.'),
-    '#required' => TRUE,
-  );
 
   // Bootstrap script options.
   $bootstrap_script_options = _sourcepoint_get_script_options('bootstrap', $form_state);
@@ -73,11 +65,109 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#value' => t('Update'),
     '#description' => t('When you click update, the script is retrieved from Sourcepoint servers and stored locally.'),
     '#ajax' => array(
-      'callback' => 'sourcepoint_update_bootstrap_script_callback',
+      'callback' => 'sourcepoint_update_script_callback',
       'wrapper' => 'bootstrap-script',
       'method' => 'html',
     ),
   );
+
+  // msg script options.
+  $msg_script_options = _sourcepoint_get_script_options('msg', $form_state);
+  $form['msg_script'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('msg script'),
+  );
+  $form['msg_script']['sourcepoint_msg_script_version'] = array(
+    '#title' => t('Version'),
+    '#type' => 'textfield',
+    '#default_value' => $msg_script_options['v'],
+    '#size' => 10,
+    '#description' => t('msg script version.'),
+    '#required' => TRUE,
+  );
+  $form['msg_script']['sourcepoint_msg_script_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Script path.'),
+    '#default_value' => variable_get('sourcepoint_msg_script_path', substr(md5(time()), 0, 10) . '.js'),
+    '#size' => 20,
+    '#description' => t('The raw content of the msg javascript will be returned from this path.'),
+    '#required' => TRUE,
+    '#element_validate' => array('sourcepoint_validate_src_path'),
+  );
+  $form['msg_script']['msg_script_status'] = array(
+    '#type' => 'fieldset',
+    '#title' => _sourcepoint_get_script_status('msg', $form_state),
+    '#prefix' => '<div id="msg-script">',
+    '#suffix' => '</div>',
+  );
+  $form['msg_script']['msg_script_status']['update_msg_script'] = array(
+    '#type' => 'submit',
+    '#name' => 'update_msg_script',
+    '#value' => t('Update'),
+    '#description' => t('When you click update, the script is retrieved from Sourcepoint servers and stored locally.'),
+    '#ajax' => array(
+      'callback' => 'sourcepoint_update_script_callback',
+      'wrapper' => 'msg-script',
+      'method' => 'html',
+    ),
+  );
+
+  // mms_client script options.
+  $mms_client_script_options = _sourcepoint_get_script_options('mms_client', $form_state);
+  $form['mms_client_script'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('mms_client script'),
+  );
+  $form['mms_client_script']['sourcepoint_mms_client_script_version'] = array(
+    '#title' => t('Version'),
+    '#type' => 'textfield',
+    '#default_value' => $mms_client_script_options['v'],
+    '#size' => 10,
+    '#description' => t('mms_client script version.'),
+    '#required' => TRUE,
+  );
+  $form['mms_client_script']['sourcepoint_mms_client_script_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Script path.'),
+    '#default_value' => variable_get('sourcepoint_mms_client_script_path', substr(md5(time()), 0, 10) . '.js'),
+    '#size' => 20,
+    '#description' => t('The raw content of the mms_client javascript will be returned from this path.'),
+    '#required' => TRUE,
+    '#element_validate' => array('sourcepoint_form_validate_script', 'sourcepoint_validate_src_path'),
+  );
+  $form['mms_client_script']['mms_client_script_status'] = array(
+    '#type' => 'fieldset',
+    '#title' => _sourcepoint_get_script_status('mms_client', $form_state),
+    '#prefix' => '<div id="mms_client-script">',
+    '#suffix' => '</div>',
+  );
+  $form['mms_client_script']['mms_client_script_status']['update_mms_client_script'] = array(
+    '#type' => 'submit',
+    '#name' => 'update_mms_client_script',
+    '#value' => t('Update'),
+    '#description' => t('When you click update, the script is retrieved from Sourcepoint servers and stored locally.'),
+    '#ajax' => array(
+      'callback' => 'sourcepoint_update_script_callback',
+      'wrapper' => 'mms_client-script',
+      'method' => 'html',
+    ),
+  );
+
+  // Add recovery fields to form.
+  $form = sourcepoint_admin_recovery_settings_form($form, $form_state);
+
+  return system_settings_form($form);
+}
+
+/**
+ * Helper to ad recovery fields to form.
+ */
+function sourcepoint_admin_recovery_settings_form($form, &$form_state) {
+  // Only expose recovery options if an ad server is supported.
+  $ad_servers = sourcepoint_get_ad_servers();
+  if (empty($ad_servers)) {
+    return $form;
+  }
 
   // Recovery script options.
   $recovery_script_options = _sourcepoint_get_script_options('recovery', $form_state);
@@ -96,10 +186,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
   $form['recovery_script']['sourcepoint_recovery_script_pub_adserver'] = array(
     '#title' => t('Pub adserver'),
     '#type' => 'select',
-    '#options' => array(
-      'dfp' => t('DFP'),
-      'smart' => t('Smart'),
-    ),
+    '#options' => $ad_servers,
     '#default_value' => $recovery_script_options['pub_adserver'],
     '#description' => t('Specifies the publisher adserver support required.'),
     '#required' => TRUE,
@@ -126,6 +213,15 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#required' => TRUE,
     '#description' => t('Format of returned script. JS is raw javascript and CDN is a CDN-based URL.'),
   );
+  $form['recovery_script']['sourcepoint_recovery_script_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Script path.'),
+    '#default_value' => variable_get('sourcepoint_recovery_script_path', substr(md5(time()), 0, 10) . '.js'),
+    '#size' => 20,
+    '#description' => t('The raw content of the recovery javascript will be returned from this path.'),
+    '#required' => TRUE,
+    '#element_validate' => array('sourcepoint_validate_src_path'),
+  );
   $form['recovery_script']['recovery_script_status'] = array(
     '#type' => 'fieldset',
     '#title' => _sourcepoint_get_script_status('recovery', $form_state),
@@ -138,50 +234,51 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#value' => t('Update'),
     '#description' => t('When you click update, the script is retrieved from Sourcepoint servers and stored locally.'),
     '#ajax' => array(
-      'callback' => 'sourcepoint_update_recovery_script_callback',
+      'callback' => 'sourcepoint_update_script_callback',
       'wrapper' => 'recovery-script',
       'method' => 'html',
     ),
   );
-
-  return system_settings_form($form);
+  return $form;
 }
 
 /**
- * Implements hook_form_validate().
+ * Helper to validate scripts.
  */
-function sourcepoint_admin_settings_form_validate($form, &$form_state) {
-  // If the script hasn't been retrieved using Update button, do it now.
-  if (!sourcepoint_get_script('recovery', $form_state)) {
-    _sourcepoint_update_script('recovery', $form_state);
-  }
-  // If we still don't have a script, display error message.
-  if (!sourcepoint_get_script('recovery', $form_state)) {
-    form_set_error('recovery_script_status', t('Recovery script not available.'));
-  }
-
-  // If the script hasn't been retrieved using Update button, do it now.
-  if (!sourcepoint_get_script('bootstrap', $form_state)) {
-    _sourcepoint_update_script('bootstrap', $form_state);
-  }
-  // If we still don't have a script, display error message.
-  if (!sourcepoint_get_script('bootstrap', $form_state)) {
-    form_set_error('bootstrap_script_status', t('Bootstrap script not available.'));
+function sourcepoint_form_validate_script($element, &$form_state) {
+  $script_types = array(
+    'sourcepoint_recvovery_script_path' => 'recovery',
+    'sourcepoint_msg_script_path' => 'msg',
+    'sourcepoint_mms_client_script_path' => 'mms_client',
+  );
+  if (!isset($script_types[$element['#name']])) {
+    return;
   }
 
-  // Sanitize and validate src path.
-  sourcepoint_validate_src_path($form, $form_state);
+  $script_type = $script_types[$element['#name']];
+
+  // If the script hasn't been retrieved using Update button, do it now.
+  if (!sourcepoint_get_script($script_type, $form_state)) {
+    _sourcepoint_update_script($script_type, $form_state);
+  }
+  // If we still don't have a script, display error message.
+  if (!sourcepoint_get_script($script_type, $form_state)) {
+    form_set_error($script_type . '_script_status', t(':type not available.', array(':type' => $script_type)));
+  }
 }
 
 /**
- * Helper to validate and sanitize the recovery script path.
+ * Helper to validate and sanitize the script path.
  *
  * @param $form
  * @param $form_state
  */
-function sourcepoint_validate_src_path($form, &$form_state) {
+function sourcepoint_validate_src_path($element, &$form_state) {
+  // Construct variable name.
+  $variable_name = $element['#name'];
+
   // Sanitize and normalize path.
-  $src_path = $form_state['input']['sourcepoint_recovery_script_path'];
+  $src_path = $element['#value'];
   $src_path = trim($src_path, '/');
   if (strpos($src_path, '.js') !== FALSE) {
     $src_path = str_replace('.js', '', $src_path);
@@ -195,7 +292,7 @@ function sourcepoint_validate_src_path($form, &$form_state) {
   $src_path = $src_path . '.js';
 
   // Check that the src path changed and it doesn't exist as a menu item.
-  if ($current_src_path = variable_get('sourcepoint_recovery_script_path')) {
+  if ($current_src_path = variable_get($variable_name)) {
     if ($current_src_path != $src_path) {
       $src_path_changed = $src_path;
     }
@@ -209,14 +306,14 @@ function sourcepoint_validate_src_path($form, &$form_state) {
   if ($src_path_changed) {
     if (drupal_valid_path($src_path_changed)) {
       // Path already exists.
-      form_set_error('sourcepoint_recovery_script_path', t('Path already exists.'));
+      form_set_error($variable_name, t('Path already exists.'));
     }
     else {
       // Update form.
-      form_set_value($form['sourcepoint_recovery_script_path'], $src_path_changed, $form_state);
+      $form_state['values'][$variable_name] = $src_path_changed;
 
       // Store new path.
-      variable_set('sourcepoint_recovery_script_path', $src_path_changed);
+      variable_set($variable_name, $src_path_changed);
 
       // Clear menu cache.
       menu_rebuild();
@@ -225,35 +322,27 @@ function sourcepoint_validate_src_path($form, &$form_state) {
 }
 
 /**
- * Callback for Bootstrap script update button.
+ * Callback for script update button.
  *
  * @param $form
  * @param $form_state
  *
  * @return string
  */
-function sourcepoint_update_bootstrap_script_callback($form, $form_state) {
-  $script_type = 'bootstrap';
-  $message = _sourcepoint_update_script($script_type, $form_state);
-  $form['bootstrap_script']['bootstrap_script_status']['#title'] = $message;
-
-  return $form['bootstrap_script']['bootstrap_script_status'];
-}
-
-/**
- * Callback for Recovery script update button.
- *
- * @param $form
- * @param $form_state
- *
- * @return string
- */
-function sourcepoint_update_recovery_script_callback($form, $form_state) {
-  $script_type = 'recovery';
-  $message = _sourcepoint_update_script($script_type, $form_state);
-  $form['recovery_script']['recovery_script_status']['#title'] = $message;
-
-  return $form['recovery_script']['recovery_script_status'];
+function sourcepoint_update_script_callback($form, $form_state) {
+  $script_types = array(
+    'update_bootstrap_script' => 'bootstrap',
+    'update_recovery_script' => 'recovery',
+    'update_msg_script' => 'msg',
+    'update_mms_client_script' => 'mms_client',
+  );
+  if (isset($script_types[$form_state['triggering_element']['#name']])) {
+    // Update script and return update message.
+    $script_type = $script_types[$form_state['triggering_element']['#name']];
+    $status = $form[$script_type . '_script'][$script_type . '_script_status'];
+    $status['#title'] = _sourcepoint_update_script($script_type, $form_state);
+    return $status;
+  }
 }
 
 /**

@@ -90,7 +90,7 @@ class SourcePointAsset {
     if (isset($this->options['fmt'])) {
       switch ($this->options['fmt']) {
         case 'js':
-          return preg_match('~^!function~', $data);
+          return preg_match('~function\(~', $data);
           break;
 
         case 'cdn':

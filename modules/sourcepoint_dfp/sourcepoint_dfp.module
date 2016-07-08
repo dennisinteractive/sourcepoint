@@ -254,3 +254,12 @@ function sourcepoint_dfp_preprocess_dfp_tag(&$vars) {
 function sourcepoint_dfp_sourcepoint_js_config_alter(&$config) {
   $config['gpt_auto_load'] = 'false';
 }
+
+/**
+ * Implements hook_sourcepoint_ad_servers().
+ */
+function sourcepoint_dfp_sourcepoint_ad_servers() {
+  return array(
+    'dfp' => t('DFP'),
+  );
+}

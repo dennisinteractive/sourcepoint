@@ -14,3 +14,14 @@ function hook_sourcepoint_js_config_alter(&$config) {
   $config['function_value'] = "function() { return true; }";
   $config['integer_value'] = "123";
 }
+
+/**
+ * Provide an ad server.
+ *
+ * @return array
+ */
+function hook_sourcepoint_ad_servers() {
+  return array(
+    'smart' => t('Smart'),
+  );
+}

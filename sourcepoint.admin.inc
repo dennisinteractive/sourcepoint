@@ -86,7 +86,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
   $msg_script_options = _sourcepoint_get_script_options('msg', $form_state);
   $form['msg_script'] = array(
     '#type' => 'fieldset',
-    '#title' => t('msg script'),
+    '#title' => t('Message script'),
   );
   $form['msg_script']['sourcepoint_msg_script_version'] = array(
     '#title' => t('Version'),
@@ -127,7 +127,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
   $mms_client_script_options = _sourcepoint_get_script_options('mms_client', $form_state);
   $form['mms_client_script'] = array(
     '#type' => 'fieldset',
-    '#title' => t('mms_client script'),
+    '#title' => t('MMS client script'),
   );
   $form['mms_client_script']['sourcepoint_mms_domain'] = array(
     '#type' => 'textfield',

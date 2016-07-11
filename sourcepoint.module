@@ -118,7 +118,28 @@ function sourcepoint_page_build() {
     }
 
     if ($landing_page = variable_get('sourcepoint_content_control_url', '')) {
+      // Redirect to content control  window.location redirect.
       $config['content_control_callback'] = "function() { window.location.href = '$landing_page'}";
+    }
+    else {
+      // Output content control console message, if redirect URL isn't set.
+      $config['content_control_callback'] = "function() { console.log('CC triggered'); }";
+    }
+
+    // MMS init.
+    if (variable_get('sourcepoint_mms_client_script_path')) {
+      $script .= "\nwindow._sp_.mms = window._sp_.mms || {};";
+      $script .= "\nwindow._sp_.mms.cmd = window._sp_.mms.cmd || [];";
+    }
+
+    // MMS domain.
+    if ($mms_domain = variable_get('sourcepoint_mms_domain', '')) {
+      $config['mms_domain'] = "'" . $mms_domain . "'";
+    }
+
+    // RID enabled.
+    if (variable_get('sourcepoint_rid_enabled', 1)) {
+      $config['enable_rid'] = 'true';
     }
 
     // Allow other modules to alter sourcepoint JS config.
@@ -128,8 +149,21 @@ function sourcepoint_page_build() {
       $script .= "\nwindow._sp_.config." . $key . " = " . $value . ";";
     }
 
+    // Recovery script.
     if ($recovery_script_path = variable_get('sourcepoint_recovery_script_path')) {
       $path = url($recovery_script_path, ['absolute' => TRUE]);
+      $script .= "\nwindow.spBootstrap('$path');";
+    }
+
+    // MSG script.
+    if ($msg_script_path = variable_get('sourcepoint_msg_script_path')) {
+      $path = url($msg_script_path, ['absolute' => TRUE]);
+      $script .= "\nwindow.spBootstrap('$path');";
+    }
+
+    // MMS Client.
+    if ($mms_client_script_path = variable_get('sourcepoint_mms_client_script_path')) {
+      $path = url($mms_client_script_path, ['absolute' => TRUE]);
       $script .= "\nwindow.spBootstrap('$path');";
     }
 

@@ -30,13 +30,24 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#size' => 50,
     '#required' => TRUE,
   );
-  $form['sourcepoint_content_control_url'] = array(
+
+  // Content Control.
+  $form['content_control'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Content Control'),
+  );
+  $form['content_control']['sourcepoint_rid_enabled'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('RID Enabled'),
+    '#default_value' => variable_get('sourcepoint_rid_enabled', 1),
+    '#description' => t('Enable Recovery Interference Detection.'),
+  );
+  $form['content_control']['sourcepoint_content_control_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Content Control landing page'),
     '#default_value' => variable_get('sourcepoint_content_control_url', ''),
     '#size' => 50,
     '#description' => t('The Url of the landing page. i.e. http://www.example.com/page'),
-    '#required' => TRUE,
   );
 
   // Bootstrap script options.
@@ -117,6 +128,13 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
   $form['mms_client_script'] = array(
     '#type' => 'fieldset',
     '#title' => t('mms_client script'),
+  );
+  $form['mms_client_script']['sourcepoint_mms_domain'] = array(
+    '#type' => 'textfield',
+    '#title' => t('MMS Domain'),
+    '#default_value' => variable_get('sourcepoint_mms_domain', ''),
+    '#size' => 50,
+    '#description' => t('The Url of the MMS domain'),
   );
   $form['mms_client_script']['sourcepoint_mms_client_script_version'] = array(
     '#title' => t('Version'),

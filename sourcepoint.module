@@ -152,19 +152,19 @@ function sourcepoint_page_build() {
     // Recovery script.
     if ($recovery_script_path = variable_get('sourcepoint_recovery_script_path')) {
       $path = url($recovery_script_path, ['absolute' => TRUE]);
-      $script .= "\nwindow.spBootstrap('$path');";
+      $script .= "\nwindow._sp_.bootstrap('$path');";
     }
 
     // MSG script.
     if ($msg_script_path = variable_get('sourcepoint_msg_script_path')) {
       $path = url($msg_script_path, ['absolute' => TRUE]);
-      $script .= "\nwindow.spBootstrap('$path');";
+      $script .= "\nwindow._sp_.bootstrap('$path');";
     }
 
     // MMS Client.
     if ($mms_client_script_path = variable_get('sourcepoint_mms_client_script_path')) {
       $path = url($mms_client_script_path, ['absolute' => TRUE]);
-      $script .= "\nwindow.spBootstrap('$path');";
+      $script .= "\nwindow._sp_.bootstrap('$path');";
     }
 
     $element = array(

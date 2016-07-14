@@ -42,13 +42,15 @@ function sourcepoint_menu() {
   // Page callback for pub_base.
   if ($pub_base = variable_get('sourcepoint_recovery_script_pub_base')) {
     $pub_base = parse_url($pub_base);
-    $pub_base = $pub_base['path'];
-    $pub_base = trim($pub_base, '/');
-    $items[$pub_base] = array(
-      'page callback' => 'sourcepoint_recovery_script_pub_base_page',
-      'access callback' => TRUE,
-      'type' => MENU_CALLBACK,
-    );
+    if (isset($pub_base['path'])) {
+      $pub_base = $pub_base['path'];
+      $pub_base = trim($pub_base, '/');
+      $items[$pub_base] = array(
+        'page callback' => 'sourcepoint_recovery_script_pub_base_page',
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+      );
+    }
   }
   // Page callback for msg script.
   if ($msg_script_path = variable_get('sourcepoint_msg_script_path')) {

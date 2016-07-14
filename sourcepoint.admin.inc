@@ -309,6 +309,9 @@ function sourcepoint_validate_src_path($element, &$form_state) {
   }
   $src_path = $src_path . '.js';
 
+  // Update form state with cleaned src value.
+  $form_state['values'][$variable_name] = $src_path;
+
   // Check that the src path changed and it doesn't exist as a menu item.
   if ($current_src_path = variable_get($variable_name)) {
     if ($current_src_path != $src_path) {
@@ -327,9 +330,6 @@ function sourcepoint_validate_src_path($element, &$form_state) {
       form_set_error($variable_name, t('Path already exists.'));
     }
     else {
-      // Update form.
-      $form_state['values'][$variable_name] = $src_path_changed;
-
       // Store new path.
       variable_set($variable_name, $src_path_changed);
 

@@ -121,7 +121,7 @@ function sourcepoint_page_build() {
 
     if ($landing_page = variable_get('sourcepoint_content_control_url', '')) {
       // Redirect to content control  window.location redirect.
-      $config['content_control_callback'] = "function() { window.location.href = '$landing_page'}";
+      $config['content_control_callback'] = "function() { window.location.href = '$landing_page'; }";
     }
     else {
       // Output content control console message, if redirect URL isn't set.

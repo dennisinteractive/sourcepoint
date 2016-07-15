@@ -304,7 +304,8 @@ function sourcepoint_validate_src_path($element, &$form_state) {
   if (module_exists('pathauto')) {
     module_load_include('inc', 'pathauto');
     if (function_exists('pathauto_cleanstring')) {
-      $src_path = pathauto_cleanstring($src_path);
+      // Clean path parts.
+      $src_path = implode('/', array_map('pathauto_cleanstring', explode('/', $src_path)));
     }
   }
   $src_path = $src_path . '.js';

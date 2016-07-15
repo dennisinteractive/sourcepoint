@@ -298,16 +298,10 @@ function sourcepoint_validate_src_path($element, &$form_state) {
   // Sanitize and normalize path.
   $src_path = $element['#value'];
   $src_path = trim($src_path, '/');
-  if (strpos($src_path, '.js') !== FALSE) {
-    $src_path = str_replace('.js', '', $src_path);
+  if (substr($src_path, -3) == '.js') {
+    $src_path = substr_replace($src_path, '', -3);
   }
-  if (module_exists('pathauto')) {
-    module_load_include('inc', 'pathauto');
-    if (function_exists('pathauto_cleanstring')) {
-      // Clean path parts.
-      $src_path = implode('/', array_map('pathauto_cleanstring', explode('/', $src_path)));
-    }
-  }
+  $src_path = preg_replace('~[^A-Za-z0-9_\-/]~', '', $src_path);
   $src_path = $src_path . '.js';
 
   // Update form state with cleaned src value.

@@ -1,0 +1,5 @@
+name = Sourcepoint API UI
+description = Sourcepoint API UI
+package = Advertising
+core = 7.x
+dependencies[] = sourcepoint

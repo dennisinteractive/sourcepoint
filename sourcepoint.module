@@ -26,7 +26,7 @@ function sourcepoint_menu() {
     'description' => 'Configure Sourcepoint parameters.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('sourcepoint_admin_settings_form'),
-    'access arguments' => array('administer site configuration'),
+    'access arguments' => array('administer sourcepoint'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'sourcepoint.admin.inc',
   );
@@ -71,6 +71,18 @@ function sourcepoint_menu() {
     );
   }
   return $items;
+}
+
+/**
+ * Implements hook_permission.
+ */
+function sourcepoint_permission() {
+  return array(
+    'administer sourcepoint' => array(
+      'title' => t('Administer Sourcepoint'),
+      'description' => t('Configure Sourcepoint.')
+    )
+  );
 }
 
 /**

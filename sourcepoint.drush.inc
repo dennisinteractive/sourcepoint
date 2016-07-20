@@ -103,7 +103,7 @@ function sourcepoint_drush_fetch_script() {
     $key = _sourcepoint_build_script_key($options);
     // Store.
     variable_set('sourcepoint_' . $script_type . '_script', [$key => $script]);
-    return drush_set_error(t('Fetched !script script.', array('!script' => $script_type)));
+    drush_log(t('Fetched !script script.', array('!script' => $script_type)), 'ok');
   } catch (Exception $e) {
     return drush_set_error(t('Could not fetch !script script. !exception', array(
       '!script' => $script_type,

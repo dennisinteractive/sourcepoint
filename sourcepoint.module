@@ -74,7 +74,7 @@ function sourcepoint_menu() {
 }
 
 /**
- * Implements hook_permission.
+ * Implements hook_permission().
  */
 function sourcepoint_permission() {
   return array(

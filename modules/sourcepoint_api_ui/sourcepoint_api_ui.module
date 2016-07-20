@@ -14,25 +14,25 @@ function sourcepoint_api_ui_menu() {
     'description' => 'Configure Sourcepoint scripts.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array(
-      'sourcepoint_api_ui_admin_settings_form'
+      'sourcepoint_api_ui_admin_settings_form',
     ),
     'access arguments' => array(
-      'administer sourcepoint api ui'
+      'administer sourcepoint api ui',
     ),
-    'type' => MENU_NORMAL_ITEM
+    'type' => MENU_NORMAL_ITEM,
   );
   return $items;
 }
 
 /**
- * Implements hook_permission.
+ * Implements hook_permission().
  */
 function sourcepoint_api_ui_permission() {
   return array(
     'administer sourcepoint api ui' => array(
       'title' => t('Administer Sourcepoint API UI'),
-      'description' => t('Fetch Sourcepoint JS from API through UI.')
-    )
+      'description' => t('Fetch Sourcepoint JS from API through UI.'),
+    ),
   );
 }
 
@@ -48,14 +48,14 @@ function sourcepoint_api_ui_admin_settings_form($form, &$form_state) {
     '#title' => t('Sourcepoint Api Key'),
     '#default_value' => variable_get('sourcepoint_api_key', ''),
     '#size' => 50,
-    '#required' => TRUE
+    '#required' => TRUE,
   );
 
   // Bootstrap script options.
   $bootstrap_script_options = _sourcepoint_get_script_options('bootstrap', $form_state);
   $form['bootstrap_script'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Bootstrap script')
+    '#title' => t('Bootstrap script'),
   );
   $form['bootstrap_script']['sourcepoint_bootstrap_script_version'] = array(
     '#title' => t('Version'),
@@ -63,13 +63,13 @@ function sourcepoint_api_ui_admin_settings_form($form, &$form_state) {
     '#default_value' => $bootstrap_script_options['v'],
     '#size' => 10,
     '#description' => t('Bootstrap script version.'),
-    '#required' => TRUE
+    '#required' => TRUE,
   );
   $form['bootstrap_script']['bootstrap_script_status'] = array(
     '#type' => 'fieldset',
     '#title' => _sourcepoint_api_ui_get_script_status('bootstrap', $form_state),
     '#prefix' => '<div id="bootstrap-script">',
-    '#suffix' => '</div>'
+    '#suffix' => '</div>',
   );
   $form['bootstrap_script']['bootstrap_script_status']['update_bootstrap_script'] = array(
     '#type' => 'submit',
@@ -79,15 +79,15 @@ function sourcepoint_api_ui_admin_settings_form($form, &$form_state) {
     '#ajax' => array(
       'callback' => 'sourcepoint_update_script_callback',
       'wrapper' => 'bootstrap-script',
-      'method' => 'html'
-    )
+      'method' => 'html',
+    ),
   );
 
   // msg script options.
   $msg_script_options = _sourcepoint_get_script_options('msg', $form_state);
   $form['msg_script'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Message script')
+    '#title' => t('Message script'),
   );
   $form['msg_script']['sourcepoint_msg_script_version'] = array(
     '#title' => t('Version'),
@@ -95,7 +95,7 @@ function sourcepoint_api_ui_admin_settings_form($form, &$form_state) {
     '#default_value' => $msg_script_options['v'],
     '#size' => 10,
     '#description' => t('msg script version.'),
-    '#required' => TRUE
+    '#required' => TRUE,
   );
   $form['msg_script']['sourcepoint_msg_script_path'] = array(
     '#type' => 'textfield',
@@ -105,14 +105,14 @@ function sourcepoint_api_ui_admin_settings_form($form, &$form_state) {
     '#description' => t('The raw content of the msg javascript will be returned from this path.'),
     '#required' => TRUE,
     '#element_validate' => array(
-      'sourcepoint_api_ui_validate_src_path'
-    )
+      'sourcepoint_api_ui_validate_src_path',
+    ),
   );
   $form['msg_script']['msg_script_status'] = array(
     '#type' => 'fieldset',
     '#title' => _sourcepoint_api_ui_get_script_status('msg', $form_state),
     '#prefix' => '<div id="msg-script">',
-    '#suffix' => '</div>'
+    '#suffix' => '</div>',
   );
   $form['msg_script']['msg_script_status']['update_msg_script'] = array(
     '#type' => 'submit',
@@ -122,22 +122,22 @@ function sourcepoint_api_ui_admin_settings_form($form, &$form_state) {
     '#ajax' => array(
       'callback' => 'sourcepoint_update_script_callback',
       'wrapper' => 'msg-script',
-      'method' => 'html'
-    )
+      'method' => 'html',
+    ),
   );
 
   // mms_client script options.
   $mms_client_script_options = _sourcepoint_get_script_options('mms_client', $form_state);
   $form['mms_client_script'] = array(
     '#type' => 'fieldset',
-    '#title' => t('MMS client script')
+    '#title' => t('MMS client script'),
   );
   $form['mms_client_script']['sourcepoint_mms_domain'] = array(
     '#type' => 'textfield',
     '#title' => t('MMS Domain'),
     '#default_value' => variable_get('sourcepoint_mms_domain', ''),
     '#size' => 50,
-    '#description' => t('The Url of the MMS domain')
+    '#description' => t('The Url of the MMS domain'),
   );
   $form['mms_client_script']['sourcepoint_mms_client_script_version'] = array(
     '#title' => t('Version'),
@@ -145,7 +145,7 @@ function sourcepoint_api_ui_admin_settings_form($form, &$form_state) {
     '#default_value' => $mms_client_script_options['v'],
     '#size' => 10,
     '#description' => t('mms_client script version.'),
-    '#required' => TRUE
+    '#required' => TRUE,
   );
   $form['mms_client_script']['sourcepoint_mms_client_script_path'] = array(
     '#type' => 'textfield',
@@ -156,14 +156,14 @@ function sourcepoint_api_ui_admin_settings_form($form, &$form_state) {
     '#required' => TRUE,
     '#element_validate' => array(
       'sourcepoint_api_ui_form_validate_script',
-      'sourcepoint_api_ui_validate_src_path'
-    )
+      'sourcepoint_api_ui_validate_src_path',
+    ),
   );
   $form['mms_client_script']['mms_client_script_status'] = array(
     '#type' => 'fieldset',
     '#title' => _sourcepoint_api_ui_get_script_status('mms_client', $form_state),
     '#prefix' => '<div id="mms_client-script">',
-    '#suffix' => '</div>'
+    '#suffix' => '</div>',
   );
   $form['mms_client_script']['mms_client_script_status']['update_mms_client_script'] = array(
     '#type' => 'submit',
@@ -173,8 +173,8 @@ function sourcepoint_api_ui_admin_settings_form($form, &$form_state) {
     '#ajax' => array(
       'callback' => 'sourcepoint_update_script_callback',
       'wrapper' => 'mms_client-script',
-      'method' => 'html'
-    )
+      'method' => 'html',
+    ),
   );
 
   // Add recovery fields to form.
@@ -192,7 +192,7 @@ function sourcepoint_api_ui_admin_settings_form($form, &$form_state) {
 function sourcepoint_api_ui_admin_recovery_settings_form($form, &$form_state) {
   // Only expose recovery options if an ad server is supported.
   $ad_servers = sourcepoint_get_ad_servers();
-  if(empty($ad_servers)){
+  if (empty($ad_servers)) {
     return $form;
   }
 
@@ -200,7 +200,7 @@ function sourcepoint_api_ui_admin_recovery_settings_form($form, &$form_state) {
   $recovery_script_options = _sourcepoint_get_script_options('recovery', $form_state);
   $form['recovery_script'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Recovery script')
+    '#title' => t('Recovery script'),
   );
   $form['recovery_script']['sourcepoint_recovery_script_pub_base'] = array(
     '#title' => t('Pub url'),
@@ -208,7 +208,7 @@ function sourcepoint_api_ui_admin_recovery_settings_form($form, &$form_state) {
     '#default_value' => $recovery_script_options['pub_base'],
     '#size' => 50,
     '#description' => t('Full URL for the pubbase to be included in the returned CS-URL.'),
-    '#required' => TRUE
+    '#required' => TRUE,
   );
   $form['recovery_script']['sourcepoint_recovery_script_pub_adserver'] = array(
     '#title' => t('Pub adserver'),
@@ -216,29 +216,29 @@ function sourcepoint_api_ui_admin_recovery_settings_form($form, &$form_state) {
     '#options' => $ad_servers,
     '#default_value' => $recovery_script_options['pub_adserver'],
     '#description' => t('Specifies the publisher adserver support required.'),
-    '#required' => TRUE
+    '#required' => TRUE,
   );
   $form['recovery_script']['sourcepoint_recovery_script_env'] = array(
     '#title' => t('Environment'),
     '#type' => 'select',
     '#options' => array(
       'prod' => t('Production'),
-      'stage' => t('Staging')
+      'stage' => t('Staging'),
     ),
     '#default_value' => $recovery_script_options['env'],
     '#description' => t('Production or Staging.'),
-    '#required' => TRUE
+    '#required' => TRUE,
   );
   $form['recovery_script']['sourcepoint_recovery_script_format'] = array(
     '#type' => 'select',
     '#title' => t('Script format'),
     '#options' => array(
       'js' => t('Inline'),
-          /*'cdn' => t('CDN'), deprecated */
-      ),
+      /*'cdn' => t('CDN'), deprecated */
+    ),
     '#default_value' => $recovery_script_options['fmt'],
     '#required' => TRUE,
-    '#description' => t('Format of returned script. JS is raw javascript and CDN is a CDN-based URL.')
+    '#description' => t('Format of returned script. JS is raw javascript and CDN is a CDN-based URL.'),
   );
   $form['recovery_script']['sourcepoint_recovery_script_path'] = array(
     '#type' => 'textfield',
@@ -248,14 +248,14 @@ function sourcepoint_api_ui_admin_recovery_settings_form($form, &$form_state) {
     '#description' => t('The raw content of the recovery javascript will be returned from this path.'),
     '#required' => TRUE,
     '#element_validate' => array(
-      'sourcepoint_api_ui_validate_src_path'
-    )
+      'sourcepoint_api_ui_validate_src_path',
+    ),
   );
   $form['recovery_script']['recovery_script_status'] = array(
     '#type' => 'fieldset',
     '#title' => _sourcepoint_api_ui_get_script_status('recovery', $form_state),
     '#prefix' => '<div id="recovery-script">',
-    '#suffix' => '</div>'
+    '#suffix' => '</div>',
   );
   $form['recovery_script']['recovery_script_status']['update_recovery_script'] = array(
     '#type' => 'submit',
@@ -265,8 +265,8 @@ function sourcepoint_api_ui_admin_recovery_settings_form($form, &$form_state) {
     '#ajax' => array(
       'callback' => 'sourcepoint_update_script_callback',
       'wrapper' => 'recovery-script',
-      'method' => 'html'
-    )
+      'method' => 'html',
+    ),
   );
   return $form;
 }
@@ -284,8 +284,8 @@ function sourcepoint_api_ui_validate_src_path($element, &$form_state) {
   // Sanitize and normalize path.
   $src_path = $element['#value'];
   $src_path = trim($src_path, '/');
-  if(substr($src_path, - 3) == '.js'){
-    $src_path = substr_replace($src_path, '', - 3);
+  if (substr($src_path, -3) == '.js') {
+    $src_path = substr_replace($src_path, '', -3);
   }
   $src_path = preg_replace('~[^A-Za-z0-9_\-/]~', '', $src_path);
   $src_path = $src_path . '.js';
@@ -294,20 +294,23 @@ function sourcepoint_api_ui_validate_src_path($element, &$form_state) {
   $form_state['values'][$variable_name] = $src_path;
 
   // Check that the src path changed and it doesn't exist as a menu item.
-  if($current_src_path = variable_get($variable_name)){
-    if($current_src_path != $src_path){
+  if ($current_src_path = variable_get($variable_name)) {
+    if ($current_src_path != $src_path) {
       $src_path_changed = $src_path;
-    }else{
+    }
+    else {
       $src_path_changed = FALSE;
     }
-  }else{
+  }
+  else {
     $src_path_changed = $src_path;
   }
-  if($src_path_changed){
-    if(drupal_valid_path($src_path_changed)){
+  if ($src_path_changed) {
+    if (drupal_valid_path($src_path_changed)) {
       // Path already exists.
       form_set_error($variable_name, t('Path already exists.'));
-    }else{
+    }
+    else {
       // Store new path.
       variable_set($variable_name, $src_path_changed);
 
@@ -327,22 +330,22 @@ function sourcepoint_api_ui_form_validate_script($element, &$form_state) {
   $script_types = array(
     'sourcepoint_recvovery_script_path' => 'recovery',
     'sourcepoint_msg_script_path' => 'msg',
-    'sourcepoint_mms_client_script_path' => 'mms_client'
+    'sourcepoint_mms_client_script_path' => 'mms_client',
   );
-  if(! isset($script_types[$element['#name']])){
+  if (!isset($script_types[$element['#name']])) {
     return;
   }
 
   $script_type = $script_types[$element['#name']];
 
   // If the script hasn't been retrieved using Update button, do it now.
-  if(! sourcepoint_get_script($script_type, $form_state)){
+  if (!sourcepoint_get_script($script_type, $form_state)) {
     _sourcepoint_update_script($script_type, $form_state);
   }
   // If we still don't have a script, display error message.
-  if(! sourcepoint_get_script($script_type, $form_state)){
+  if (!sourcepoint_get_script($script_type, $form_state)) {
     form_set_error($script_type . '_script_status', t(':type not available.', array(
-      ':type' => $script_type
+      ':type' => $script_type,
     )));
   }
 }
@@ -358,9 +361,9 @@ function sourcepoint_api_ui_update_script_callback($form, $form_state) {
     'update_bootstrap_script' => 'bootstrap',
     'update_recovery_script' => 'recovery',
     'update_msg_script' => 'msg',
-    'update_mms_client_script' => 'mms_client'
+    'update_mms_client_script' => 'mms_client',
   );
-  if(isset($script_types[$form_state['triggering_element']['#name']])){
+  if (isset($script_types[$form_state['triggering_element']['#name']])) {
     // Update script and return update message.
     $script_type = $script_types[$form_state['triggering_element']['#name']];
     $status = $form[$script_type . '_script'][$script_type . '_script_status'];
@@ -376,9 +379,10 @@ function sourcepoint_api_ui_update_script_callback($form, $form_state) {
  * @param $form_state
  */
 function _sourcepoint_api_ui_get_script_status($script_type, $form_state) {
-  if(sourcepoint_get_script($script_type, $form_state)){
+  if (sourcepoint_get_script($script_type, $form_state)) {
     return _sourcepoint_set_message('Script is stored locally.', 'ok');
-  }else{
+  }
+  else {
     return _sourcepoint_set_message('No script available for the selected options, click Update.', 'error');
   }
 }
@@ -394,19 +398,19 @@ function _sourcepoint_api_ui_update_script($script_type, $form_state) {
   $api_key = $form_state['input']['sourcepoint_api_key'];
   variable_del('sourcepoint_' . $script_type . '_script');
 
-  try{
+  try {
     $script = sourcepoint_fetch_script($script_type, $api_key, $options);
-    if(isset($script)){
+    if (isset($script)) {
       // Create key to store in settings.
       $key = _sourcepoint_build_script_key($options);
       variable_set('sourcepoint_' . $script_type . '_script', [
-        $key => $script
+        $key => $script,
       ]);
 
       // Update status.
       return _sourcepoint_api_ui_get_script_status($script_type, $form_state);
     }
-  }catch(Exception $e){
+  } catch (Exception $e) {
     // Update status with a custom message;
     return _sourcepoint_set_message($e->getMessage(), 'error');
   }

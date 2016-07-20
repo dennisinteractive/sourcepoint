@@ -56,7 +56,7 @@ function sourcepoint_drush_fetch_script() {
 
   // Check that path is provided for external scripts.
   if (in_array($script_type, array('msg', 'mms_client', 'recovery'))) {
-    if (!$path = drush_get_option('sp-path')){
+    if (!$path = drush_get_option('sp-path')) {
       return drush_set_error(t('Please specify script sp-path.'));
     }
     variable_set('sourcepoint_' . $script_type . '_script_path', $path);
@@ -69,9 +69,9 @@ function sourcepoint_drush_fetch_script() {
       'pub-adserver' => 'pub_adserver',
       'format' => 'format',
       'pub-page' => 'pub_base',
-    ) ;
+    );
     foreach ($recovery_options as $drush_opt => $variable_key) {
-      if (!$opt_value = drush_get_option('sp-' . $drush_opt)){
+      if (!$opt_value = drush_get_option('sp-' . $drush_opt)) {
         return drush_set_error(t('Please specify recovery option "!option".', array(
           '!option' => 'sp-' . $drush_opt,
         )));

@@ -68,7 +68,7 @@ function sourcepoint_drush_fetch_script() {
       'env' => 'env',
       'pub-adserver' => 'pub_adserver',
       'format' => 'format',
-      'pub-page' => 'pub_page',
+      'pub-page' => 'pub_base',
     ) ;
     foreach ($recovery_options as $drush_opt => $variable_key) {
       if (!$opt_value = drush_get_option('sp-' . $drush_opt)){

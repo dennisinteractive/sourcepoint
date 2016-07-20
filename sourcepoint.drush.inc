@@ -54,12 +54,15 @@ function sourcepoint_drush_fetch_script() {
     )));
   }
 
-  // Check that path is provided for external scripts.
+  // Check that path is available for external scripts.
   if (in_array($script_type, array('msg', 'mms_client', 'recovery'))) {
-    if (!$path = drush_get_option('sp-path')) {
+    $path_variable_name = 'sourcepoint_' . $script_type . '_script_path';
+    if ($path = drush_get_option('sp-path')) {
+      variable_set($path_variable_name, $path);
+    }
+    elseif (!variable_get($path_variable_name)) {
       return drush_set_error(t('Please specify script sp-path.'));
     }
-    variable_set('sourcepoint_' . $script_type . '_script_path', $path);
   }
 
   // Recovery require extra configuration.
@@ -70,19 +73,26 @@ function sourcepoint_drush_fetch_script() {
       'format' => 'format',
       'pub-page' => 'pub_base',
     );
-    foreach ($recovery_options as $drush_opt => $variable_key) {
-      if (!$opt_value = drush_get_option('sp-' . $drush_opt)) {
+    foreach ($recovery_options as $drush_opt => $variable_name_part) {
+      $recovery_variable_name = 'sourcepoint_' . $script_type . '_script_' . $variable_name_part;
+      if ($opt_value = drush_get_option('sp-' . $drush_opt)) {
+        variable_set($recovery_variable_name, $opt_value);
+      }
+      elseif (!variable_get($recovery_variable_name)) {
         return drush_set_error(t('Please specify recovery option "!option".', array(
           '!option' => 'sp-' . $drush_opt,
         )));
       }
-      variable_set('sourcepoint_' . $script_type . '_script_' . $variable_key, $opt_value);
     }
   }
 
   // Set script version if specified.
+  $version_variable_name = 'sourcepoint_' . $script_type . '_script_version';
   if ($version = drush_get_option('sp-version')) {
-    variable_set('sourcepoint_' . $script_type . '_script_version', $version);
+    variable_set($version_variable_name, $version);
+  }
+  elseif (!variable_get($version_variable_name)) {
+    return drush_set_error(t('Please specify sp-version'));
   }
 
   // Fetch script.

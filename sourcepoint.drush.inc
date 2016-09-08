@@ -22,6 +22,7 @@ function sourcepoint_drush_command() {
       'sp-pub-adserver' => t('Ad Server being used e.g. DFP'),
       'sp-format' => t('Format e.g. js'),
       'sp-pub-page' => t('Publisher base'),
+      'sp-include-msg' => t('Include recovery message'),
     ),
     'examples' => array(
       'drush sourcepoint-fs --sp-type="bootstrap" --sp-version="1.7.150"',

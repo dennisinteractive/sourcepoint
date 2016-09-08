@@ -334,12 +334,15 @@ function _sourcepoint_get_script_options($script_type, $form_state = []) {
       else {
         $fmt = variable_get('sourcepoint_recovery_script_format', 'js');
       }
+      $include_msg = variable_get('sourcepoint_recovery_script_include_msg', 'true');
+
 
       return [
         'pub_base' => $pub_base,
         'pub_adserver' => $pub_adserver,
         'env' => $env,
         'fmt' => $fmt,
+        'include_msg' => $include_msg,
       ];
       break;
 

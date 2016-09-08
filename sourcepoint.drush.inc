@@ -72,6 +72,7 @@ function sourcepoint_drush_fetch_script() {
       'pub-adserver' => 'pub_adserver',
       'format' => 'format',
       'pub-page' => 'pub_base',
+      'include-msg' => 'include_msg',
     );
     foreach ($recovery_options as $drush_opt => $variable_name_part) {
       $recovery_variable_name = 'sourcepoint_' . $script_type . '_script_' . $variable_name_part;

@@ -117,6 +117,7 @@ function sourcepoint_dfp_page_build() {
   $script .= "window.googletag.cmd = [];";
   $script .= "window.googletag.slots = slots;";
   $script .= "var scriptsArray = [];";
+  $script .= "googletag.cmd.push(function () {googletag.destroySlots(); window.googletag.slots = window.slots;});";
   $script .= "[].slice.call(document.querySelectorAll('script[$data_name]')).forEach(function(s) {";
   $script .= "scriptsArray.push(s.innerText.replace('<!--//--><![CDATA[//><!--', '').replace('//--><!]]>', ''));";
   $script .= "});";

@@ -4,19 +4,6 @@
  * Code for the Sourcepoint core module.
  */
 
-spl_autoload_register('sourcepoint_autoload', TRUE, TRUE);
-
-/**
- * PSR-4 autoloader callback for spl_autoload_register().
- *
- * @param $class
- */
-function sourcepoint_autoload($class) {
-  if (file_exists(__DIR__ . '/' . $class . '.class.php')) {
-    include(__DIR__ . '/' . $class . '.class.php');
-  }
-}
-
 /**
  * Implements hook_menu().
  */

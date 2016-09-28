@@ -110,7 +110,7 @@ function sourcepoint_dfp_page_build() {
 
   // Function to re-initialize GPT.
   $script .= "function spInitSlots() {";
-  $script .= "if (gptLoadComplete === true && attemptedRecovery === false && isBlocking === true) {";
+  $script .= "if (gptLoadComplete === true && attemptedRecovery === false && isBlocking === true && isOIR === true) {";
   $script .= "googletag.cmd.push(function () {googletag.destroySlots(); window.googletag.slots = window.slots;});";
   $script .= "attemptedRecovery = true;";
   $script .= "var slots = window.googletag.slots;";
@@ -129,6 +129,14 @@ function sourcepoint_dfp_page_build() {
   $script .= "window._sp_.dfp.loadGPT();";
   $script .= "}";
   $script .= "}";
+
+  // Callback to init slots when user has opted in.
+  $script .= "window._sp_.config.mms_client_data_callback = function showit(e) {";
+  $script .= "if (e.o.oir == true) {";
+  $script .= "isOIR = true;";
+  $script .= "spInitSlots();";
+  $script .= "}";
+  $script .= "};";
 
   $element = array(
     '#tag' => 'script',
@@ -199,7 +207,7 @@ function sourcepoint_dfp_preprocess_html_tag(&$vars) {
 
   if (isset($element['#value']) && strpos($element['#value'], 'gads.src') > 0) {
     // Prepend with flags.
-    $element['#value'] = "var attemptedRecovery = false, gptLoadComplete = false, isBlocking = false;" . $element['#value'];
+    $element['#value'] = "var attemptedRecovery = false, gptLoadComplete = false, isBlocking = false, isOIR = false;" . $element['#value'];
 
     // Add onload callback to GPT.
     $script = "gads.onload = gads.onerror = function () {";

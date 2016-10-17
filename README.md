@@ -47,3 +47,9 @@ $key = _sourcepoint_build_script_key($options);
 // Store.
 variable_set('sourcepoint_recovery_script', [$key => $script]);
 ```
+
+## Fetch script via drush command:
+// Get drush examples.
+drush sourcepoint-fs --help
+// Update script by type, i.e:
+drush sourcepoint-fs --sp-type="bootstrap"

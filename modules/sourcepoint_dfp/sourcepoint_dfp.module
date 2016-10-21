@@ -140,7 +140,7 @@ function sourcepoint_dfp_page_build() {
 
   // Callback to trigger recovery when user hits opt-in button.
   $script .= "window._sp_.config.mms_choice_selected_callback = function(choiceID) {";
-  $script .= "if (choiceID === 2) {";
+  $script .= "if (parseInt(choiceID, 10)) {";
   $script .= "isOIR = true;";
   $script .= "spInitSlots();";
   $script .= "}";

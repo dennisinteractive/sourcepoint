@@ -111,12 +111,11 @@ function sourcepoint_dfp_page_build() {
   // Function to re-initialize GPT.
   $script .= "function spInitSlots() {";
   $script .= "if (gptLoadComplete === true && attemptedRecovery === false && isBlocking === true && isOIR === true) {";
-  $script .= "googletag.cmd.push(function () {googletag.destroySlots(); window.googletag.slots = window.slots;});";
+  $script .= "googletag.cmd.push(function () {googletag.destroySlots();});";
   $script .= "attemptedRecovery = true;";
-  $script .= "var slots = window.googletag.slots;";
   $script .= "window.googletag = {};";
   $script .= "window.googletag.cmd = [];";
-  $script .= "window.googletag.slots = slots;";
+  $script .= "window.googletag.slots = [];";
   $script .= "var scriptsArray = [];";
   $script .= "[].slice.call(document.querySelectorAll('script[$data_name]')).forEach(function(s) {";
   $script .= "scriptsArray.push(s.innerText.replace('<!--//--><![CDATA[//><!--', '').replace('//--><!]]>', ''));";

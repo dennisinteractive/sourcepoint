@@ -8,7 +8,7 @@
  * Implements hook_form_alter().
  */
 function sourcepoint_dfp_form_ctools_export_ui_edit_item_form_alter(&$form, &$form_state, $form_id) {
-  if (isset($form_state['plugin']['schema']) && $form_state['plugin']['schema'] = 'dfp_tags') {
+  if (isset($form_state['plugin']['schema']) && $form_state['plugin']['schema'] == 'dfp_tags') {
 
     $tag = ($form_state['op'] == 'add' ? $form_state['item'] : $form_state['item']->raw);
 

@@ -11,7 +11,7 @@ function sourcepoint_dfp_install() {
   $settings = ['sourcepoint_dfp_slots_recovery'];
   $tags = dfp_tag_load_all();
   foreach ($tags as $tag) {
-    $settings['sourcepoint_dfp_slots_recovery'][$tag->machinename] = 0;
+    $settings['sourcepoint_dfp_slots_recovery'][$tag->machinename] = '0';
   }
   variable_set('sourcepoint_dfp_slots_recovery', $settings['sourcepoint_dfp_slots_recovery']);
 }

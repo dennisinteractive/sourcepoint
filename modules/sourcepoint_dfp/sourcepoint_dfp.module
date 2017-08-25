@@ -212,17 +212,10 @@ function sourcepoint_dfp_preprocess_html_tag(&$vars) {
     }
   }
 
-  if (isset($element['#value']) && strpos($element['#value'], 'gads.src') > 0) {
-    // Prepend with flags.
-    $element['#value'] = "var attemptedRecovery = false, gptLoadComplete = false, isBlocking = false, isOIR = false;" . $element['#value'];
-
-    // Add onload callback to GPT.
-    $script = "gads.onload = gads.onerror = function () {";
-    $script .= "gptLoadComplete = true;";
-    $script .= "spInitSlots();";
-    $script .= "};";
-    $script .= 'gads.src';
-    $element['#value'] = str_replace('gads.src', $script, $element['#value']);
+  if (isset($element['#attributes']['src']) && $element['#attributes']['src']==='//'.DFP_GOOGLE_TAG_SERVICES_URL) {
+    // Add onload/onerror callback to GPT script.
+    $jsfunction = 'attemptedRecovery = false, gptLoadComplete = true, isBlocking = false, isOIR = false;spInitSlots();';
+    $element['#attributes']['onload']=$element['#attributes']['onerror']=$jsfunction;
   }
 }
 

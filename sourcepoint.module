@@ -168,7 +168,7 @@ function sourcepoint_page_build() {
       $script .= "\nwindow._sp_.bootstrap('$path');";
     }
 
-    if(isset($mms_client_script_path) || variable_get('sourcepoint_recovery_script_include_msg',false)
+    if(isset($mms_client_script_path) || variable_get('sourcepoint_recovery_script_include_msg',false)){
       $script .= "\nwindow._sp_.mms.cmd.push(function(){ window._sp_.mms.startMsg(); });";
     }
 

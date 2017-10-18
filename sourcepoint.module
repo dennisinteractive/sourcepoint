@@ -130,7 +130,7 @@ function sourcepoint_page_build() {
     // MMS init. is mandatory
     $script .= "\nwindow._sp_.mms = window._sp_.mms || {};";
     $script .= "\nwindow._sp_.mms.cmd = window._sp_.mms.cmd || [];";
-    
+
 
     // MMS domain.
     if ($mms_domain = variable_get('sourcepoint_mms_domain', '')) {
@@ -140,6 +140,11 @@ function sourcepoint_page_build() {
     // RID enabled.
     if (variable_get('sourcepoint_rid_enabled', 1)) {
       $config['enable_rid'] = 'true';
+    }
+
+    // Style Manager Enabled.
+    if (variable_get('sourcepoint_style_manager', 1)) {
+      $config['styleManager.enableSimple'] = 'true';
     }
 
     // Allow other modules to alter sourcepoint JS config.
@@ -167,9 +172,9 @@ function sourcepoint_page_build() {
       $path = file_create_url($mms_client_script_path, ['absolute' => TRUE]);
       $script .= "\nwindow._sp_.bootstrap('$path');";
     }
-    
+
     $script .= "\nwindow._sp_.mms.cmd.push(function(){ window._sp_.mms.startMsg(); });";
-    
+
 
     $element = array(
       '#tag' => 'script',

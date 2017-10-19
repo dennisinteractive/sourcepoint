@@ -42,5 +42,17 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#description' => t('The Url of the landing page. i.e. http://www.example.com/page'),
   );
 
+  // Style Manager
+  $form['style_manager'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Style Manager'),
+  );
+  $form['style_manager']['sourcepoint_style_manager'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Style Manager Enabled'),
+    '#default_value' => variable_get('sourcepoint_style_manager', 1),
+    '#description' => t('Enable Style Manager'),
+  );
+
   return system_settings_form($form);
 }

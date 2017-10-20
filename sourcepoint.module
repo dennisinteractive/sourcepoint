@@ -144,6 +144,7 @@ function sourcepoint_page_build() {
 
     // Style Manager Enabled.
     if (variable_get('sourcepoint_style_manager', 1)) {
+      $config['styleManager'] = '{}';
       $config['styleManager.enableSimple'] = 'true';
     }
 

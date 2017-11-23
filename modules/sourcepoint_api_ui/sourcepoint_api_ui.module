@@ -340,7 +340,7 @@ function sourcepoint_api_ui_form_validate_script($element, &$form_state) {
 
   // If the script hasn't been retrieved using Update button, do it now.
   if (!sourcepoint_get_script($script_type, $form_state)) {
-    _sourcepoint_update_script($script_type, $form_state);
+    _sourcepoint_api_ui_update_script($script_type, $form_state);
   }
   // If we still don't have a script, display error message.
   if (!sourcepoint_get_script($script_type, $form_state)) {
@@ -367,7 +367,7 @@ function sourcepoint_api_ui_update_script_callback($form, $form_state) {
     // Update script and return update message.
     $script_type = $script_types[$form_state['triggering_element']['#name']];
     $status = $form[$script_type . '_script'][$script_type . '_script_status'];
-    $status['#title'] = _sourcepoint_update_script($script_type, $form_state);
+    $status['#title'] = _sourcepoint_api_ui_update_script($script_type, $form_state);
     return $status;
   }
 }

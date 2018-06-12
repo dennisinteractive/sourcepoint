@@ -42,6 +42,18 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#description' => t('The Url of the landing page. i.e. http://www.example.com/page'),
   );
 
+  // Consent Management Platform.
+  $form['cmp'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Consent Management Platform'),
+  );
+  $form['cmp']['sourcepoint_cmp_enabled'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('CMP Enabled'),
+    '#default_value' => variable_get('sourcepoint_cmp_enabled', 1),
+    '#description' => t('Enable Consent Management Platform.'),
+  );
+
   // Style Manager
   $form['style_manager'] = array(
     '#type' => 'fieldset',

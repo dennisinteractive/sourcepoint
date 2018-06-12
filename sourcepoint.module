@@ -155,6 +155,11 @@ function sourcepoint_page_build() {
       $script .= "\nwindow._sp_.config." . $key . " = " . $value . ";";
     }
 
+    // Consent Management Platform.
+    $script .= "\nwindow._sp_.config.cmp = _sp_.config.cmp || {};";
+    $cmp_value = variable_get('sourcepoint_cmp_enabled', 1) ? 'true' : 'false';
+    $script .= "\nwindow._sp_.config.cmp.enabled = " . $cmp_value . ";";
+
     // Recovery script.
     if ($recovery_script_path = variable_get('sourcepoint_recovery_script_path')) {
       $path = file_create_url($recovery_script_path, ['absolute' => TRUE]);

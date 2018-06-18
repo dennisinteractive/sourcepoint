@@ -54,17 +54,24 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#description' => t('Enable Consent Management Platform.'),
   );
 
-  // Consent Management Platform.
+  // Detection Timeout Management.
   $form['detection'] = array(
     '#type' => 'fieldset',
     '#title' => t('Detection Timeout Management'),
   );
 
-  $form['detection']['detection_timeout_value'] = array(
+  $form['detection']['sourcepoint_dtm_enabled'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Detection Timeout Enabled'),
-    '#default_value' => variable_get('sourcepoint_detection_timeout_enabled', 1),
+    '#title' => t('Enabled'),
+    '#default_value' => variable_get('sourcepoint_dtm_enabled', 1),
     '#description' => t('Enable detection timeout.'),
+  );
+  $form['detection']['sourcepoint_dtm_timeout'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Timeout'),
+    '#default_value' => variable_get('sourcepoint_dtm_timeout', 500),
+    '#description' => t('Detection timeout in milliseconds.'),
+    '#element_validate' => array('element_validate_integer_positive')
   );
 
   // Style Manager

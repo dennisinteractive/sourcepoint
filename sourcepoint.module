@@ -160,10 +160,12 @@ function sourcepoint_page_build() {
     $cmp_value = variable_get('sourcepoint_cmp_enabled', 1) ? 'true' : 'false';
     $script .= "\nwindow._sp_.config.cmp.enabled = " . $cmp_value . ";";
 
-    // Detection timeout Management.
-    $script .= "\nwindow._sp_.config.detection = _sp_.config.detection || {};";
-    $timeout_value = variable_get('sourcepoint_detection_timeout_enabled', 1) ?' 500' : '0';
-    $script .= "\nwindow._sp_.config.detection.timeout = " . $timeout_value . ";";
+    // Detection Timeout Management.
+    if (variable_get('sourcepoint_dtm_enabled', 1)) {
+      $script .= "\nwindow._sp_.config.detection = _sp_.config.detection || {};";
+      $timeout_value = (int) variable_get('sourcepoint_dtm_timeout', 500);
+      $script .= "\nwindow._sp_.config.detection.timeout = " . $timeout_value . ";";
+    }
 
     // Recovery script.
     if ($recovery_script_path = variable_get('sourcepoint_recovery_script_path')) {

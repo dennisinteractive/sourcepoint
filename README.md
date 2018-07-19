@@ -6,7 +6,7 @@ by current adblocker technology.
 
 This Drupal module provides the integration with Sourcepoint scripts.
 
-## Updating the local javascripts programatically:
+## Updating the local javascripts programmatically:
 
 ### Global api key:
 ```php
@@ -49,7 +49,11 @@ variable_set('sourcepoint_recovery_script', [$key => $script]);
 ```
 
 ## Fetch script via drush command:
-// Get drush examples.
-drush sourcepoint-fs --help
-// Update script by type, i.e:
-drush sourcepoint-fs --sp-type="bootstrap"
+Help and examples
+
+`drush sourcepoint-fs --help`
+
+Update script by type:
+
+`drush sourcepoint-fs --sp-type="bootstrap"`
+

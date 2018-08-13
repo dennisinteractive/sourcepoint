@@ -178,13 +178,11 @@ function sourcepoint_page_build(&$page) {
     $script .= "\nwindow._sp_.config.cmp.enabled = " . $cmp_value . ";";
 
     // Overlay iframe.
-    $privacy_manager_id = variable_get('sourcepoint_cmp_privacy_manager_id');
-    $site_id = variable_get('sourcepoint_cmp_site_id');
-    if (!empty($site_id) && !empty($privacy_manager_id)) {
+    if ($url = sourcepoint_get_privacy_manager_url()) {
       $module_path = drupal_get_path('module', 'sourcepoint');
       $page['page_bottom']['sourcepoint_cmp_overlay'] = array(
         '#theme' => 'sourcepoint_cmp_overlay',
-        '#url' => check_plain('//' . $mms_domain . '/cmp/privacy_manager?privacy_manager_id=' . $privacy_manager_id . '&site_id=' . $site_id),
+        '#url' => $url,
         '#height' => check_plain(variable_get('sourcepoint_cmp_overlay_height', '600px')),
         '#width' => check_plain(variable_get('sourcepoint_cmp_overlay_width', '600px')),
         '#attached' => array(
@@ -456,4 +454,22 @@ function sourcepoint_get_ad_servers() {
   // Fetch supported ad servers.
   $ad_servers = module_invoke_all('sourcepoint_ad_servers');
   return $ad_servers;
+}
+
+/**
+ * Get the URL of the privacy manager.
+ */
+function sourcepoint_get_privacy_manager_url() {
+  $mms_domain = variable_get('sourcepoint_mms_domain');
+  $privacy_manager_id = variable_get('sourcepoint_cmp_privacy_manager_id');
+  $site_id = variable_get('sourcepoint_cmp_site_id');
+
+  if (!empty($mms_domain) && !empty($site_id) && !empty($privacy_manager_id)) {
+    return url('//' . $mms_domain . '/cmp/privacy_manager', array(
+      'query' => array(
+        'privacy_manager_id' => $privacy_manager_id,
+        'site_id' => $site_id,
+      )
+    ));
+  }
 }

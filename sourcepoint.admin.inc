@@ -89,6 +89,13 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#size' => 50,
     '#description' => t('Width of the overlay iframe.'),
   );
+  if ($url = sourcepoint_get_privacy_manager_url()) {
+    $form['cmp']['sourcepoint_cmp_url'] = array(
+      '#markup' => t('Privacy Manager URL: !url', array(
+        '!url' => l($url, $url),
+      )),
+    );
+  }
 
   // Detection Timeout Management.
   $form['detection'] = array(

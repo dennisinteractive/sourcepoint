@@ -178,26 +178,8 @@ function sourcepoint_page_build(&$page) {
     $script .= "\nwindow._sp_.config.cmp.enabled = " . $cmp_value . ";";
 
     // Overlay iframe.
-    if ($url = sourcepoint_get_privacy_manager_url()) {
-      $module_path = drupal_get_path('module', 'sourcepoint');
-      $page['page_bottom']['sourcepoint_cmp_overlay'] = array(
-        '#theme' => 'sourcepoint_cmp_overlay',
-        '#url' => $url,
-        '#height' => check_plain(variable_get('sourcepoint_cmp_overlay_height', '600px')),
-        '#width' => check_plain(variable_get('sourcepoint_cmp_overlay_width', '600px')),
-        '#attached' => array(
-          'css' => array(
-            $module_path . '/css/cmp_overlay.css',
-          ),
-          'js' => array(
-            $module_path . '/js/cmp_overlay.js' => array(
-              'attributes' => array(
-                'async' => 'async',
-              ),
-            ),
-          ),
-        ),
-      );
+    if ($overlay = sourcepoint_get_privacy_manager_overlay()) {
+      $page['page_bottom']['sourcepoint_cmp_overlay'] = $overlay;
     }
 
     // Detection Timeout Management.
@@ -458,6 +440,8 @@ function sourcepoint_get_ad_servers() {
 
 /**
  * Get the URL of the privacy manager.
+ *
+ * @return string
  */
 function sourcepoint_get_privacy_manager_url() {
   $mms_domain = variable_get('sourcepoint_mms_domain');
@@ -471,5 +455,35 @@ function sourcepoint_get_privacy_manager_url() {
         'site_id' => $site_id,
       )
     ));
+  }
+}
+
+/**
+ * Render array for privacy manager overlay.
+ *
+ * @return array
+ */
+function sourcepoint_get_privacy_manager_overlay() {
+  if ($url = sourcepoint_get_privacy_manager_url()) {
+    $module_path = drupal_get_path('module', 'sourcepoint');
+    $overlay = array(
+      '#theme' => 'sourcepoint_cmp_overlay',
+      '#url' => $url,
+      '#height' => check_plain(variable_get('sourcepoint_cmp_overlay_height', '600px')),
+      '#width' => check_plain(variable_get('sourcepoint_cmp_overlay_width', '600px')),
+      '#attached' => array(
+        'css' => array(
+          $module_path . '/css/cmp_overlay.css',
+        ),
+        'js' => array(
+          $module_path . '/js/cmp_overlay.js' => array(
+            'attributes' => array(
+              'async' => 'async',
+            ),
+          ),
+        ),
+      ),
+    );
+    return $overlay;
   }
 }

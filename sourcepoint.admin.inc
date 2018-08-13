@@ -53,6 +53,42 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#default_value' => variable_get('sourcepoint_cmp_enabled', 1),
     '#description' => t('Enable Consent Management Platform.'),
   );
+  $form['cmp']['sourcepoint_cmp_site_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Site ID'),
+    '#default_value' => variable_get('sourcepoint_cmp_site_id', ''),
+    '#size' => 50,
+    '#description' => t('Site ID for privacy manager.'),
+    '#element_validate' => array('element_validate_integer_positive')
+  );
+  $form['cmp']['sourcepoint_cmp_site_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Site ID'),
+    '#default_value' => variable_get('sourcepoint_cmp_site_id', ''),
+    '#size' => 50,
+    '#description' => t('Site ID for Privacy Manager.'),
+  );
+  $form['cmp']['sourcepoint_cmp_privacy_manager_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Privacy Manager ID'),
+    '#default_value' => variable_get('sourcepoint_cmp_privacy_manager_id', ''),
+    '#size' => 50,
+    '#description' => t('Privacy Manager ID.'),
+  );
+  $form['cmp']['sourcepoint_cmp_overlay_height'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Overlay Height'),
+    '#default_value' => variable_get('sourcepoint_cmp_overlay_height', '600px'),
+    '#size' => 50,
+    '#description' => t('Height of the overlay iframe.'),
+  );
+  $form['cmp']['sourcepoint_cmp_overlay_width'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Overlay Width'),
+    '#default_value' => variable_get('sourcepoint_cmp_overlay_width', '600px'),
+    '#size' => 50,
+    '#description' => t('Width of the overlay iframe.'),
+  );
 
   // Detection Timeout Management.
   $form['detection'] = array(

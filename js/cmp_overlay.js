@@ -10,6 +10,10 @@
     var modalLinks = document.querySelectorAll('.sourcepoint-cmp-overlay');
     for (var i = 0; i < modalLinks.length; i++) {
         modalLinks[i].onclick = function(e) {
+            var iframe = document.getElementById('sourcepoint-cmp-modal-iframe');
+            if (typeof iframe.src == 'undefined' || !iframe.src) {
+                iframe.src = iframe.dataset.src;
+            }
             modal.style.display = 'block';
             e.preventDefault();
         }

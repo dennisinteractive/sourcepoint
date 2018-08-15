@@ -61,13 +61,6 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#description' => t('Site ID for privacy manager.'),
     '#element_validate' => array('element_validate_integer_positive')
   );
-  $form['cmp']['sourcepoint_cmp_site_id'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Site ID'),
-    '#default_value' => variable_get('sourcepoint_cmp_site_id', ''),
-    '#size' => 50,
-    '#description' => t('Site ID for Privacy Manager.'),
-  );
   $form['cmp']['sourcepoint_cmp_privacy_manager_id'] = array(
     '#type' => 'textfield',
     '#title' => t('Privacy Manager ID'),

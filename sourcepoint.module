@@ -480,6 +480,7 @@ function sourcepoint_get_privacy_manager_overlay() {
             'attributes' => array(
               'async' => 'async',
             ),
+            'scope' => 'footer',
           ),
         ),
       ),

@@ -178,7 +178,7 @@ function sourcepoint_page_build(&$page) {
     $script .= "\nwindow._sp_.config.cmp.enabled = " . $cmp_value . ";";
 
     // Overlay iframe.
-    if ($overlay = sourcepoint_get_privacy_manager_overlay()) {
+    if (variable_get('sourcepoint_cmp_enabled', 1) && $overlay = sourcepoint_get_privacy_manager_overlay()) {
       $page['page_bottom']['sourcepoint_cmp_overlay'] = $overlay;
     }
 

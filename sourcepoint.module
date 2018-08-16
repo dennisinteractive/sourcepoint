@@ -63,7 +63,7 @@ function sourcepoint_menu() {
       'title' => variable_get('sourcepoint_cmp_link_title', 'Privacy Preferences'),
       'menu_name' => variable_get('sourcepoint_cmp_link_menu_name', 'navigation'),
       'type' => MENU_NORMAL_ITEM,
-      'weight' => variable_get('sourcepoint_cmp_link_weight', ''),
+      'weight' => variable_get('sourcepoint_cmp_link_weight', 0),
       'options' => array(
         'attributes' => array(
           'class' => array('sourcepoint-cmp-overlay')

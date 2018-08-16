@@ -107,7 +107,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
   $form['cmp']['sourcepoint_cmp_link_weight'] = array(
     '#type' => 'textfield',
     '#title' => t('Menu Link Weight'),
-    '#default_value' => variable_get('sourcepoint_cmp_link_weight', ''),
+    '#default_value' => variable_get('sourcepoint_cmp_link_weight', 0),
     '#size' => 50,
     '#description' => t('Weight to determine position of the link.'),
   );

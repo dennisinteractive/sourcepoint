@@ -50,7 +50,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
   $form['cmp']['sourcepoint_cmp_enabled'] = array(
     '#type' => 'checkbox',
     '#title' => t('CMP Enabled'),
-    '#default_value' => variable_get('sourcepoint_cmp_enabled', 1),
+    '#default_value' => variable_get('sourcepoint_cmp_enabled', 0),
     '#description' => t('Enable Consent Management Platform.'),
   );
   $form['cmp']['sourcepoint_cmp_site_id'] = array(
@@ -81,6 +81,35 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#default_value' => variable_get('sourcepoint_cmp_overlay_width', '600px'),
     '#size' => 50,
     '#description' => t('Width of the overlay iframe.'),
+  );
+
+  // Privacy Preferences Link
+  $form['cmp']['sourcepoint_cmp_link_enabled'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('CMP Link Enabled'),
+    '#default_value' => variable_get('sourcepoint_cmp_link_enabled', 0),
+    '#description' => t('Enable a menu link for the Consent Management Platform pop-up.'),
+  );
+  $form['cmp']['sourcepoint_cmp_link_title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Link Title'),
+    '#default_value' => variable_get('sourcepoint_cmp_link_title', ''),
+    '#size' => 50,
+    '#description' => t('Define the title of the link.'),
+  );
+  $form['cmp']['sourcepoint_cmp_link_menu_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Menu'),
+    '#default_value' => variable_get('sourcepoint_cmp_link_menu_name', ''),
+    '#size' => 50,
+    '#description' => t('The menu to add the link to.'),
+  );
+  $form['cmp']['sourcepoint_cmp_link_weight'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Menu Link Weight'),
+    '#default_value' => variable_get('sourcepoint_cmp_link_weight', ''),
+    '#size' => 50,
+    '#description' => t('Weight to determine position of the link.'),
   );
 
   // Overlay iframe.

@@ -58,17 +58,20 @@ function sourcepoint_menu() {
     );
   }
   // Create item in a menu.
-  $items[sourcepoint_get_privacy_manager_url()] = array(
-    'title' => 'Privacy Preferences',
-    'menu_name' => 'menu-external-links',
-    'type' => MENU_SUGGESTED_ITEM,
-    'weight' => -44,
-    'options' => array(
-      'attributes' => array(
-        'class' => array('sourcepoint-cmp-overlay')
-      )
-    ),
-  );
+  if (variable_get('sourcepoint_cmp_link_enabled', 1) && variable_get('sourcepoint_cmp_enabled', 1)) {
+    $items[sourcepoint_get_privacy_manager_url()] = array(
+      'title' => variable_get('sourcepoint_cmp_link_title', 'Privacy Preferences'),
+      'menu_name' => variable_get('sourcepoint_cmp_link_menu_name', 'navigation'),
+      'type' => MENU_NORMAL_ITEM,
+      'weight' => variable_get('sourcepoint_cmp_link_weight', ''),
+      'options' => array(
+        'attributes' => array(
+          'class' => array('sourcepoint-cmp-overlay')
+        )
+      ),
+    );
+  }
+
   return $items;
 }
 

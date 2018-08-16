@@ -57,6 +57,18 @@ function sourcepoint_menu() {
       'type' => MENU_CALLBACK,
     );
   }
+  // Create item in a menu.
+  $items[sourcepoint_get_privacy_manager_url()] = array(
+    'title' => 'Privacy Preferences',
+    'menu_name' => 'menu-external-links',
+    'type' => MENU_SUGGESTED_ITEM,
+    'weight' => -44,
+    'options' => array(
+      'attributes' => array(
+        'class' => array('sourcepoint-cmp-overlay')
+      )
+    ),
+  );
   return $items;
 }
 

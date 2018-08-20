@@ -19,6 +19,15 @@ function sourcepoint_uninstall() {
   variable_del('sourcepoint_recovery_script_pub_base');
   variable_del('sourcepoint_recovery_script_format');
   variable_del('sourcepoint_recovery_script_path');
+  variable_del('sourcepoint_rid_enabled');
+  variable_del('sourcepoint_cmp_enabled');
+  variable_del('sourcepoint_cmp_site_id');
+  variable_del('sourcepoint_cmp_privacy_manager_id');
+  variable_del('sourcepoint_cmp_overlay_height');
+  variable_del('sourcepoint_cmp_overlay_width');
+  variable_del('sourcepoint_dtm_enabled');
+  variable_del('sourcepoint_dtm_timeout');
+  variable_del('sourcepoint_style_manager');
 }
 
 /**

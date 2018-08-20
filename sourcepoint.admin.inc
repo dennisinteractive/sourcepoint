@@ -98,10 +98,10 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#description' => t('Define the title of the link.'),
   );
   $form['cmp']['sourcepoint_cmp_link_menu_name'] = array(
-    '#type' => 'textfield',
+    '#type' => 'select',
     '#title' => t('Menu'),
+    '#options' => menu_get_menus(),
     '#default_value' => variable_get('sourcepoint_cmp_link_menu_name', ''),
-    '#size' => 50,
     '#description' => t('The menu to add the link to.'),
   );
   $form['cmp']['sourcepoint_cmp_link_weight'] = array(

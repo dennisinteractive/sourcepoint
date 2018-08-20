@@ -110,6 +110,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#default_value' => variable_get('sourcepoint_cmp_link_weight', 0),
     '#size' => 50,
     '#description' => t('Weight to determine position of the link.'),
+    '#element_validate' => array('element_validate_integer')
   );
 
   // Overlay iframe.

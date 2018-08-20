@@ -50,7 +50,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
   $form['cmp']['sourcepoint_cmp_enabled'] = array(
     '#type' => 'checkbox',
     '#title' => t('CMP Enabled'),
-    '#default_value' => variable_get('sourcepoint_cmp_enabled', 0),
+    '#default_value' => variable_get('sourcepoint_cmp_enabled', 1),
     '#description' => t('Enable Consent Management Platform.'),
   );
   $form['cmp']['sourcepoint_cmp_site_id'] = array(

@@ -57,7 +57,7 @@ function sourcepoint_menu() {
       'type' => MENU_CALLBACK,
     );
   }
-  // Create item in a menu.
+  // Allow <sourcepoint_cmp_overlay> to be used in menus.
   if (variable_get('sourcepoint_cmp_enabled', 1)) {
     $items['<sourcepoint_cmp_overlay>'] = array(
       'type' => MENU_CALLBACK,

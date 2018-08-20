@@ -83,42 +83,18 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#description' => t('Width of the overlay iframe.'),
   );
 
-  // Privacy Preferences Link
-  $form['cmp']['sourcepoint_cmp_link_enabled'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('CMP Link Enabled'),
-    '#default_value' => variable_get('sourcepoint_cmp_link_enabled', 0),
-    '#description' => t('Enable a menu link for the Consent Management Platform pop-up.'),
-  );
-  $form['cmp']['sourcepoint_cmp_link_title'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Link Title'),
-    '#default_value' => variable_get('sourcepoint_cmp_link_title', ''),
-    '#size' => 50,
-    '#description' => t('Define the title of the link.'),
-  );
-  $form['cmp']['sourcepoint_cmp_link_menu_name'] = array(
-    '#type' => 'select',
-    '#title' => t('Menu'),
-    '#options' => menu_get_menus(),
-    '#default_value' => variable_get('sourcepoint_cmp_link_menu_name', ''),
-    '#description' => t('The menu to add the link to.'),
-  );
-  $form['cmp']['sourcepoint_cmp_link_weight'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Menu Link Weight'),
-    '#default_value' => variable_get('sourcepoint_cmp_link_weight', 0),
-    '#size' => 50,
-    '#description' => t('Weight to determine position of the link.'),
-    '#element_validate' => array('element_validate_integer')
-  );
-
   // Overlay iframe.
   if ($url = sourcepoint_get_privacy_manager_url()) {
+    $messages = array();
+    $messages[] = t('<h2>Privacy Manager</h2>URL: !url', array(
+      '!url' => l($url, $url, array('attributes' => array('class' => 'sourcepoint-cmp-overlay'))),
+    ));
+    $messages[] = t('Add :class class to links to open overlay.', array(':class' => '.sourcepoint-cmp-overlay'));
+    $messages[] = t('Use :menu_link to open the overlay from menu items.', array(':menu_link' => '<sourcepoint_cmp_overlay>'));
+
     $form['cmp']['sourcepoint_cmp_overlay_demo_url'] = array(
-      '#markup' => t('<h2>Privacy Manager</h2>URL: !url <br />Add <em>.sourcepoint-cmp-overlay</em> class to links to open overlay.', array(
-        '!url' => l($url, $url, array('attributes' => array('class' => 'sourcepoint-cmp-overlay'))),
-      )),
+      '#theme' => 'item_list',
+      '#items' => $messages,
     );
     $form['cmp']['sourcepoint_cmp_overlay_demo'] = sourcepoint_get_privacy_manager_overlay();
   }

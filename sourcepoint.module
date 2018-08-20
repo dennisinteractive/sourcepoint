@@ -58,21 +58,37 @@ function sourcepoint_menu() {
     );
   }
   // Create item in a menu.
-  if (variable_get('sourcepoint_cmp_link_enabled', 0) && variable_get('sourcepoint_cmp_enabled', 1)) {
-    $items[sourcepoint_get_privacy_manager_url()] = array(
-      'title' => variable_get('sourcepoint_cmp_link_title', 'Privacy Preferences'),
-      'menu_name' => variable_get('sourcepoint_cmp_link_menu_name', 'navigation'),
-      'type' => MENU_NORMAL_ITEM,
-      'weight' => variable_get('sourcepoint_cmp_link_weight', 0),
-      'options' => array(
-        'attributes' => array(
-          'class' => array('sourcepoint-cmp-overlay')
-        )
-      ),
+  if (variable_get('sourcepoint_cmp_enabled', 1)) {
+    $items['<sourcepoint_cmp_overlay>'] = array(
+      'type' => MENU_CALLBACK,
+      'page callback' => 'drupal_goto',
+      'page arguments' => array(sourcepoint_get_privacy_manager_url()),
+      'access callback' => TRUE,
     );
   }
 
   return $items;
+}
+
+/**
+ * Implements hook_menu_link_alter().
+ */
+function sourcepoint_menu_link_alter(&$item) {
+  // Allow <sourcepoint_cmp_overlay> links to be altered and add overlay class.
+  if ($item['link_path'] == '<sourcepoint_cmp_overlay>') {
+    $item['options']['alter'] = TRUE;
+    $item['options']['attributes']['class'][] = 'sourcepoint-cmp-overlay';
+  }
+}
+
+/**
+ * Implements hook_translated_menu_link_alter().
+ */
+function sourcepoint_translated_menu_link_alter(&$item) {
+  // Change overlay link to external URL.
+  if ($item['link_path'] == '<sourcepoint_cmp_overlay>') {
+    $item['href'] = sourcepoint_get_privacy_manager_url();
+  }
 }
 
 /**

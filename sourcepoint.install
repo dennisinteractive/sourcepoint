@@ -25,10 +25,6 @@ function sourcepoint_uninstall() {
   variable_del('sourcepoint_cmp_privacy_manager_id');
   variable_del('sourcepoint_cmp_overlay_height');
   variable_del('sourcepoint_cmp_overlay_width');
-  variable_del('sourcepoint_cmp_link_enabled');
-  variable_del('sourcepoint_cmp_link_title');
-  variable_del('sourcepoint_cmp_link_menu_name');
-  variable_del('sourcepoint_cmp_link_weight');
   variable_del('sourcepoint_dtm_enabled');
   variable_del('sourcepoint_dtm_timeout');
   variable_del('sourcepoint_style_manager');

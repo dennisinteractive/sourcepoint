@@ -1,0 +1,7 @@
+selector:
+  version: VERSION
+  js:
+    js/cmp_overlay.js: { scope: footer }
+  css:
+    component:
+      css/cmp_overlay.css: {}

@@ -1,0 +1,17 @@
+services:
+  sourcepoint.api.manager:
+    class: Drupal\sourcepoint\Api\ApiManager
+    arguments: ['@sourcepoint.api.http_client']
+    tags:
+      - { name: service_collector, tag: sourcepoint_endpoint, call: addEndpoint }
+  sourcepoint.api.http_client:
+    class: Drupal\sourcepoint\Api\HttpClient
+    arguments: ['@http_client']
+  sourcepoint.api.endpoint.bootstrap:
+    class: Drupal\sourcepoint\Api\Endpoint\Bootstrap
+    tags:
+      - { name: sourcepoint_endpoint, priority: 0 }
+  sourcepoint.api.endpoint.msg:
+    class: Drupal\sourcepoint\Api\Endpoint\Msg
+    tags:
+      - { name: sourcepoint_endpoint, priority: 0 }

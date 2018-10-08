@@ -18,3 +18,17 @@ function sourcepoint_theme($existing, $type, $theme, $path) {
     ],
   ];
 }
+
+/**
+ * @todo move into service.
+ */
+function sourcepoint_get_privacy_manager_url() {
+  return '';
+}
+
+/**
+ * @todo move into service.
+ */
+function sourcepoint_get_privacy_manager_overlay() {
+  return '';
+}

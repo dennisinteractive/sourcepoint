@@ -1,0 +1,39 @@
+{#
+/**
+ * @file
+ * Sourcepoint Bootstrap.
+ */
+#}
+{{ source(bootstrap_path) }}
+window._sp_ = window._sp_ || {};
+window._sp_.config = window._sp_.config || {};
+window._sp_.mms = window._sp_.mms || {};
+window._sp_.mms.cmd = window._sp_.mms.cmd || [];
+{% if account_id %}
+window._sp_.config.account_id = {{ account_id }};
+{% endif %}
+{% if content_control_url %}
+window._sp_.config.content_control_callback = function() { window.location.href = '{{ content_control_url }}'; };
+{% endif %}
+{% if mms_domain %}
+window._sp_.config.mms_domain = '{{ mms_domain }}';
+{% endif %}
+{% if enable_rid %}
+window._sp_.config.enable_rid = true;
+{% endif %}
+{% if style_manager %}
+window._sp_.config.styleManager = {};
+window._sp_.config.styleManager.enableSimple = true;
+{% endif %}
+{% if cmp_enabled %}
+window._sp_.config.cmp = _sp_.config.cmp || {};
+window._sp_.config.cmp.enabled = true;
+{% endif %}
+{% if dtm_timeout %}
+window._sp_.config.detection = _sp_.config.detection || {};
+window._sp_.config.detection.timeout = {{ dtm_timeout }};
+{% endif %}
+{% if msg_url %}
+window._sp_.bootstrap('{{ msg_url }}');
+window._sp_.mms.cmd.push(function(){ window._sp_.mms.startMsg(); });
+{% endif %}

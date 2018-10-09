@@ -82,5 +82,5 @@ function sourcepoint_page_attachments(array &$page) {
   }
 
   // Attach to the page.
-  $page['#attached']['html_head'][] = [$bootstrap];
+  $page['#attached']['html_head'][] = [$bootstrap, 'sourcepoint_bootstrap'];
 }

@@ -1,13 +1,13 @@
 <?php
 namespace Drupal\sourcepoint\Api;
 
-use GuzzleHttp\ClientInterface;
+use GuzzleHttp\ClientInterface as HttpClientInterface;
 
 /**
  * Class Client
  * @package Drupal\sourcepoint\Api\Client
  */
-class HttpClient implements HttpClientInterface {
+class HttpClient implements ClientInterface {
   /**
    * @var string
    */
@@ -21,10 +21,10 @@ class HttpClient implements HttpClientInterface {
   protected $httpClient;
 
   /**
-   * HttpClient constructor.
+   * Client constructor.
    * @param \GuzzleHttp\ClientInterface $http_client
    */
-  public function __construct(ClientInterface $http_client) {
+  public function __construct(HttpClientInterface $http_client) {
     $this->httpClient = $http_client;
   }
 

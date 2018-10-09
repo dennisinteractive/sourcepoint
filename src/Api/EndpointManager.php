@@ -2,10 +2,10 @@
 namespace Drupal\sourcepoint\Api;
 
 /**
- * Class ApiManager
+ * Class EndpointManager
  * @package Drupal\sourcepoint\Api
  */
-class ApiManager implements ApiManagerInterface {
+class EndpointManager implements EndpointManagerInterface {
 
   /**
    * @var \Drupal\sourcepoint\Api\EndpointInterface[]
@@ -13,32 +13,9 @@ class ApiManager implements ApiManagerInterface {
   protected $endpoints = [];
 
   /**
-   * @var \Drupal\sourcepoint\Api\HttpClientInterface
-   */
-  protected $httpClient;
-
-  /**
-   * ApiManager constructor.
-   * @param \Drupal\sourcepoint\Api\HttpClientInterface $http_client
-   */
-  public function __construct(HttpClientInterface $http_client) {
-    $this->httpClient = $http_client;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setApiKey($api_key) {
-    $this->httpClient->setApiKey($api_key);
-    return $this;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function addEndpoint(EndpointInterface $endpoint) {
-    // Set HTTP Client.
-    $endpoint->setHttpClient($this->httpClient);
     // Register endpoint.
     $this->endpoints[$endpoint->getName()] = $endpoint;
   }

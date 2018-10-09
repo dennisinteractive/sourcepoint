@@ -2,16 +2,10 @@
 namespace Drupal\sourcepoint\Api;
 
 /**
- * Interface ApiManagerInterface
+ * Interface EndpointManagerInterface
  * @package Drupal\sourcepoint\Api
  */
-interface ApiManagerInterface {
-  /**
-   * @param $api_key
-   * @return ApiManagerInterface
-   */
-  public function setApiKey($api_key);
-
+interface EndpointManagerInterface {
   /**
    * @return mixed
    */

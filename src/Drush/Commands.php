@@ -1,10 +1,8 @@
 <?php
 namespace Drupal\sourcepoint\Drush;
 
-use Drupal\Core\Executable\ExecutableException;
-use Drupal\sourcepoint\Api\ApiManagerInterface;
+use Drupal\sourcepoint\Api\EndpointManagerInterface;
 use Drush\Commands\DrushCommands;
-use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Class Fetch
@@ -12,16 +10,16 @@ use Symfony\Component\Console\Input\InputOption;
  */
 class Commands extends DrushCommands {
   /**
-   * @var \Drupal\sourcepoint\Api\ApiManagerInterface
+   * @var \Drupal\sourcepoint\Api\EndpointManagerInterface
    */
-  protected $apiManager;
+  protected $endpointManager;
 
   /**
    * Commands constructor.
-   * @param \Drupal\sourcepoint\Api\ApiManagerInterface $api_manager
+   * @param \Drupal\sourcepoint\Api\EndpointManagerInterface $endpoint_manager
    */
-  public function __construct(ApiManagerInterface $api_manager) {
-    $this->apiManager = $api_manager;
+  public function __construct(EndpointManagerInterface $endpoint_manager) {
+    $this->endpointManager = $endpoint_manager;
   }
 
   /**
@@ -39,16 +37,25 @@ class Commands extends DrushCommands {
     'apikey' => '',
   ]) {
     // Validate required options.
-    foreach (['name', 'path', 'apikey'] as $key) {
+    foreach (['name', 'apikey'] as $key) {
       if (empty($options[$key]) || is_bool($options[$key])) {
         throw new \Exception('--' . $key . ' is required.');
       }
     }
-    // Fetch script.
-    $this->apiManager
-      ->setApiKey($options['apikey'])
+    // Get endpoint.
+    $endpoint = $this->endpointManager
       ->getEndpoint($options['name'])
-      ->fetch($options['path']);
+      ->setApiKey($options['apikey']);
+
+    // Set path.
+    if (!empty($options['path']) && is_string($options['path'])) {
+      $endpoint->setPath($options['path']);
+    }
+
+    // Fetch script and save config.
+    $endpoint
+      ->fetch()
+      ->saveConfig();
   }
 
 }

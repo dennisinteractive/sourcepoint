@@ -1,5 +1,6 @@
 <?php
 namespace Drupal\sourcepoint\Api;
+use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Interface EndpointInterface
@@ -7,10 +8,28 @@ namespace Drupal\sourcepoint\Api;
  */
 interface EndpointInterface {
   /**
-   * Stores the endpoint script.
+   * @param $api_key
    * @return EndpointInterface
    */
-  public function fetch($path);
+  public function setApiKey($api_key);
+
+  /**
+   * Fetches/stores the endpoint script.
+   * @return EndpointInterface
+   */
+  public function fetch();
+
+  /**
+   * Sets the path where the script will be saved.
+   * @return EndpointInterface
+   */
+  public function setPath($path);
+
+  /**
+   * Gets the path where the script will be saved.
+   * @return string
+   */
+  public function getPath();
 
   /**
    * Script to fetch from the API.
@@ -19,8 +38,8 @@ interface EndpointInterface {
   public function getName();
 
   /**
-   * @param \Drupal\sourcepoint\Api\HttpClientInterface $http_client
+   * Saves the endpoint configuration.
    * @return EndpointInterface
    */
-  public function setHttpClient(HttpClientInterface $http_client);
+  public function saveConfig();
 }

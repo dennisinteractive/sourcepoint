@@ -1,5 +1,6 @@
 <?php
 namespace Drupal\sourcepoint\Api;
+use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Class AbstractEndpoint
@@ -12,32 +13,101 @@ abstract class AbstractEndpoint implements EndpointInterface {
   const SERVICE_URL_BASE = 'https://api.sourcepoint.com/script';
 
   /**
-   * @var \Drupal\sourcepoint\Api\HttpClientInterface
+   * The config name for endpoint settings.
    */
-  protected $httpClient;
+  const CONFIG_BASE_NAME = 'sourcepoint.endpoints';
 
   /**
-   * {@inheritdoc}
+   * @var \Drupal\sourcepoint\Api\ClientInterface
    */
-  public function setHttpClient(HttpClientInterface $http_client) {
-    $this->httpClient = $http_client;
+  protected $client;
+
+  /**
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
+   * @var string
+   */
+  protected $path;
+
+  /**
+   * AbstractEndpoint constructor.
+   * @param \Drupal\sourcepoint\Api\ClientInterface $http_client
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   */
+  public function __construct(ClientInterface $client, ConfigFactoryInterface $config_factory) {
+    $this->client = $client;
+    $this->configFactory = $config_factory;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getHttpClient() {
-    if (isset($this->httpClient)) {
-      return $this->httpClient;
+  public function setPath($path) {
+    $this->path = $path;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPath() {
+    if (isset($this->path)) {
+      return $this->path;
     }
-    throw new \Exception('HTTP client has not been set.');
+    if ($path = $this->getConfig()->get('path')) {
+      return $this->path = $path;
+    }
+    throw new \Exception('Path has not been set');
   }
 
   /**
    * {@inheritdoc}
    */
-  public function fetch($path) {
-    return file_unmanaged_save_data($this->request(), $path, FILE_EXISTS_REPLACE);
+  public function fetch() {
+    file_unmanaged_save_data($this->request(), $this->getPath(), FILE_EXISTS_REPLACE);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setApiKey($api_key) {
+    $this->client->setApiKey($api_key);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function saveConfig() {
+    $config = $this->getEditableConfig();
+    $config->set('path', $this->getPath());
+    $config->save();
+    return $this;
+  }
+
+  /**
+   * @return string
+   */
+  protected function getConfigName() {
+    return self::CONFIG_BASE_NAME . '.' . $this->getName();
+  }
+
+  /**
+   * @return \Drupal\Core\Config\Config
+   */
+  protected function getEditableConfig() {
+    return $this->configFactory->getEditable($this->getConfigName());
+  }
+
+  /**
+   * @return \Drupal\Core\Config\ImmutableConfig
+   */
+  protected function getConfig() {
+    return $this->configFactory->get($this->getConfigName());
   }
 
   /**
@@ -46,6 +116,6 @@ abstract class AbstractEndpoint implements EndpointInterface {
    * @throws \Exception
    */
   protected function request() {
-    return $this->getHttpClient()->request(self::SERVICE_URL_BASE . '/' . $this->getName());
+    return $this->client->request(self::SERVICE_URL_BASE . '/' . $this->getName());
   }
 }

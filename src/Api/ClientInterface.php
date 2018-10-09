@@ -2,13 +2,13 @@
 namespace Drupal\sourcepoint\Api;
 
 /**
- * Interface HttpClientInterface
+ * Interface ClientInterface
  * @package Drupal\sourcepoint\Api
  */
-interface HttpClientInterface {
+interface ClientInterface {
   /**
    * @param $api_key
-   * @return HttpClientInterface
+   * @return ClientInterface
    */
   public function setApiKey($api_key);
 

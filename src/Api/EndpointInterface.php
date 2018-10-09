@@ -7,16 +7,10 @@ namespace Drupal\sourcepoint\Api;
  */
 interface EndpointInterface {
   /**
-   * Fetches and returns the script.
+   * Stores the endpoint script.
    * @return EndpointInterface
    */
-  public function fetch();
-
-  /**
-   * Stores the endpoint result.
-   * @return EndpointInterface
-   */
-  public function store($path);
+  public function fetch($path);
 
   /**
    * Script to fetch from the API.

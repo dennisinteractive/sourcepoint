@@ -36,15 +36,16 @@ abstract class AbstractEndpoint implements EndpointInterface {
   /**
    * {@inheritdoc}
    */
-  public function fetch() {
-    return $this->getHttpClient()->request(self::SERVICE_URL_BASE . '/' . $this->getName());
+  public function fetch($path) {
+    return file_unmanaged_save_data($this->request(), $path, FILE_EXISTS_REPLACE);
   }
 
   /**
-   * {@inheritdoc}
+   * Perform API request.
+   * @return string
+   * @throws \Exception
    */
-  public function store($path) {
-    return file_unmanaged_save_data($this->fetch(), $path, FILE_EXISTS_REPLACE);
+  protected function request() {
+    return $this->getHttpClient()->request(self::SERVICE_URL_BASE . '/' . $this->getName());
   }
-
 }

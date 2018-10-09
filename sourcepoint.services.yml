@@ -15,3 +15,8 @@ services:
     class: Drupal\sourcepoint\Api\Endpoint\Msg
     tags:
       - { name: sourcepoint_endpoint, priority: 0 }
+  sourcepoint.drush.commands:
+    class: \Drupal\sourcepoint\Drush\Commands
+    arguments: ['@sourcepoint.api.manager']
+    tags:
+      - { name: drush.command }

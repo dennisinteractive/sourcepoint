@@ -7,12 +7,6 @@ namespace Drupal\sourcepoint\Api;
  */
 interface ApiManagerInterface {
   /**
-   * @param $endpoint_name
-   * @return ApiManagerInterface
-   */
-  public function fetch($endpoint_name);
-
-  /**
    * @param $api_key
    * @return ApiManagerInterface
    */

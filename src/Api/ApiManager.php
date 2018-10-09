@@ -28,13 +28,6 @@ class ApiManager implements ApiManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function fetch($endpoint_name) {
-    return $this->getEndpoint($endpoint_name)->fetch();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function setApiKey($api_key) {
     $this->httpClient->setApiKey($api_key);
     return $this;

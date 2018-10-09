@@ -21,3 +21,6 @@ services:
     arguments: ['@sourcepoint.api.endpoint_manager']
     tags:
       - { name: drush.command }
+  sourcepoint.cmp:
+      class: \Drupal\sourcepoint\Cmp
+      arguments: ['@config.factory', '@url_generator']

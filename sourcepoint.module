@@ -20,15 +20,11 @@ function sourcepoint_theme($existing, $type, $theme, $path) {
 }
 
 /**
- * @todo move into service.
+ * Implements hook_page_bottom().
  */
-function sourcepoint_get_privacy_manager_url() {
-  return '';
-}
-
-/**
- * @todo move into service.
- */
-function sourcepoint_get_privacy_manager_overlay() {
-  return '';
+function sourcepoint_page_bottom(array &$page_bottom) {
+  $cmp = \Drupal::service('sourcepoint.cmp');
+  if ($cmp->enabled() && $overlay = $cmp->getOverlay()) {
+    $page_bottom['sourcepoint_cmp_overlay'] = $overlay;
+  }
 }

@@ -1,4 +1,4 @@
-selector:
+cmp:
   version: VERSION
   js:
     js/cmp_overlay.js: { scope: footer }

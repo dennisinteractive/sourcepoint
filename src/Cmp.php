@@ -1,20 +1,29 @@
 <?php
+
 namespace Drupal\sourcepoint;
+
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Url;
 
 /**
- * Class Cmp
+ * Class Cmp.
+ *
+ * @package Drupal\sourcepoint
  */
 class Cmp implements CmpInterface {
+
   /**
+   * Config factory.
+   *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
 
   /**
    * Cmp constructor.
+   *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   Config factory.
    */
   public function __construct(ConfigFactoryInterface $config_factory) {
     $this->configFactory = $config_factory;
@@ -36,12 +45,12 @@ class Cmp implements CmpInterface {
     $site_id = $this->getConfig()->get('cmp_site_id');
 
     if (!empty($mms_domain) && !empty($site_id) && !empty($privacy_manager_id)) {
-      return Url::fromUri('//' . $mms_domain . '/cmp/privacy_manager', array(
-        'query' => array(
+      return Url::fromUri('//' . $mms_domain . '/cmp/privacy_manager', [
+        'query' => [
           'privacy_manager_id' => $privacy_manager_id,
           'site_id' => $site_id,
-        )
-      ));
+        ],
+      ]);
     }
   }
 
@@ -49,24 +58,28 @@ class Cmp implements CmpInterface {
    * {@inheritdoc}
    */
   public function getOverlay() {
-    $overlay = array(
+    $overlay = [
       '#theme' => 'sourcepoint_cmp_overlay',
       '#url' => $this->getUrl(),
       '#height' => $this->getConfig()->get('cmp_overlay_height', '600px'),
       '#width' => $this->getConfig()->get('cmp_overlay_width', '600px'),
       '#attached' => [
         'library' => [
-          'sourcepoint/cmp'
-        ]
-      ]
-    );
+          'sourcepoint/cmp',
+        ],
+      ],
+    ];
     return $overlay;
   }
 
   /**
+   * Get config.
+   *
    * @return \Drupal\Core\Config\ImmutableConfig
+   *   Immutable config.
    */
   protected function getConfig() {
     return $this->configFactory->get('sourcepoint.settings');
   }
+
 }

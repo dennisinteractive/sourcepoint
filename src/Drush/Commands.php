@@ -1,37 +1,49 @@
 <?php
+
 namespace Drupal\sourcepoint\Drush;
 
 use Drupal\sourcepoint\Api\EndpointManagerInterface;
 use Drush\Commands\DrushCommands;
 
 /**
- * Class Fetch
+ * Class Fetch.
+ *
  * @package Drupal\sourcepoint\Drush
  */
 class Commands extends DrushCommands {
+
   /**
+   * Endpoint manager.
+   *
    * @var \Drupal\sourcepoint\Api\EndpointManagerInterface
    */
   protected $endpointManager;
 
   /**
    * Commands constructor.
+   *
    * @param \Drupal\sourcepoint\Api\EndpointManagerInterface $endpoint_manager
+   *   Endpoint manager.
    */
   public function __construct(EndpointManagerInterface $endpoint_manager) {
     $this->endpointManager = $endpoint_manager;
   }
 
   /**
-   * @command sourcepoint:fetch
+   * Fetch and store scripts.
+   *
    * @param array $options
+   *   Options.
+   *
+   * @command sourcepoint:fetch
    * @options name Script name
    * @options path Location to save the script
    * @options apikey API key to authenticate
    * @aliases sp:fetch
+   *
    * @throws \Exception
    */
-  public function fetch($options = [
+  public function fetch(array $options = [
     'name' => '',
     'path' => '',
     'apikey' => '',

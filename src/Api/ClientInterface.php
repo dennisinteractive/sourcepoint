@@ -1,20 +1,34 @@
 <?php
+
 namespace Drupal\sourcepoint\Api;
 
 /**
- * Interface ClientInterface
+ * Interface ClientInterface.
+ *
  * @package Drupal\sourcepoint\Api
  */
 interface ClientInterface {
+
   /**
-   * @param $api_key
+   * Set the client API key.
+   *
+   * @param string $api_key
+   *   API key.
+   *
    * @return ClientInterface
+   *   Client service.
    */
   public function setApiKey($api_key);
 
   /**
-   * @param $url
+   * Requests provided URL.
+   *
+   * @param string $url
+   *   URL to fetch.
+   *
    * @return string
+   *   Response body.
    */
   public function request($url);
+
 }

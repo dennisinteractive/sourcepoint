@@ -1,14 +1,19 @@
 <?php
+
 namespace Drupal\sourcepoint\Api;
 
 use GuzzleHttp\ClientInterface as HttpClientInterface;
 
 /**
- * Class Client
+ * Class Client.
+ *
  * @package Drupal\sourcepoint\Api\Client
  */
 class HttpClient implements ClientInterface {
+
   /**
+   * API key.
+   *
    * @var string
    */
   protected $apiKey;
@@ -22,7 +27,9 @@ class HttpClient implements ClientInterface {
 
   /**
    * Client constructor.
+   *
    * @param \GuzzleHttp\ClientInterface $http_client
+   *   HTTP client.
    */
   public function __construct(HttpClientInterface $http_client) {
     $this->httpClient = $http_client;
@@ -42,8 +49,9 @@ class HttpClient implements ClientInterface {
     $response = $this->httpClient->request('GET', $url, [
       'headers' => [
         'Authorization' => 'Token token=' . $this->apiKey,
-      ]
+      ],
     ]);
     return $response->getBody();
   }
+
 }

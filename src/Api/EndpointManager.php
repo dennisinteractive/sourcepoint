@@ -1,13 +1,17 @@
 <?php
+
 namespace Drupal\sourcepoint\Api;
 
 /**
- * Class EndpointManager
+ * Class EndpointManager.
+ *
  * @package Drupal\sourcepoint\Api
  */
 class EndpointManager implements EndpointManagerInterface {
 
   /**
+   * List of collected endpoints.
+   *
    * @var \Drupal\sourcepoint\Api\EndpointInterface[]
    */
   protected $endpoints = [];
@@ -37,4 +41,5 @@ class EndpointManager implements EndpointManagerInterface {
   public function getEndpoints() {
     return $this->endpoints;
   }
+
 }

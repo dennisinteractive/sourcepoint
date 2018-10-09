@@ -14,14 +14,19 @@ use Drupal\Core\Link;
  */
 class SettingsForm extends ConfigFormBase {
   /**
+   * CMP service.
+   *
    * @var \Drupal\sourcepoint\CmpInterface
    */
   protected $cmp;
 
   /**
    * SettingsForm constructor.
+   *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   Config factory.
    * @param \Drupal\sourcepoint\CmpInterface $cmp
+   *   CMP service.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
@@ -181,7 +186,7 @@ class SettingsForm extends ConfigFormBase {
       '#min' => 0,
     ];
 
-    // Style Manager
+    // Style Manager.
     $form['style_manager'] = [
       '#type' => 'fieldset',
       '#title' => t('Style Manager'),

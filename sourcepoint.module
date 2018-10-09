@@ -26,7 +26,7 @@ function sourcepoint_theme($existing, $type, $theme, $path) {
         'mms_domain' => NULL,
         'msg_url' => NULL,
         'rid_enabled' => NULL,
-        'style_manager' => NULL,
+        'style_manager_enabled' => NULL,
       ],
     ],
   ];
@@ -75,7 +75,7 @@ function sourcepoint_page_attachments(array &$page) {
     'dtm_timeout',
     'mms_domain',
     'rid_enabled',
-    'style_manager',
+    'style_manager_enabled',
   ];
   foreach ($config_names as $config_name) {
     $bootstrap['#' . $config_name] = $config->get($config_name);

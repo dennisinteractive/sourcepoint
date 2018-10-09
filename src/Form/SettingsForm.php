@@ -186,10 +186,10 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'fieldset',
       '#title' => t('Style Manager'),
     ];
-    $form['style_manager']['style_manager'] = [
+    $form['style_manager']['style_manager_enabled'] = [
       '#type' => 'checkbox',
       '#title' => t('Enable Style Manager'),
-      '#default_value' => $config->get('style_manager'),
+      '#default_value' => $config->get('style_manager_enabled'),
     ];
 
     return parent::buildForm($form, $form_state);
@@ -214,7 +214,7 @@ class SettingsForm extends ConfigFormBase {
       'cmp_overlay_width',
       'dtm_enabled',
       'dtm_timeout',
-      'style_manager',
+      'style_manager_enabled',
     ];
     foreach ($keys as $key) {
       $config->set($key, $form_state->getValue($key));

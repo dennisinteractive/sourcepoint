@@ -23,4 +23,4 @@ services:
       - { name: drush.command }
   sourcepoint.cmp:
       class: \Drupal\sourcepoint\Cmp
-      arguments: ['@config.factory', '@url_generator']
+      arguments: ['@config.factory']

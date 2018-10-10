@@ -61,8 +61,8 @@ class Cmp implements CmpInterface {
     $overlay = [
       '#theme' => 'sourcepoint_cmp_overlay',
       '#url' => $this->getUrl(),
-      '#height' => $this->getConfig()->get('cmp_overlay_height', '600px'),
-      '#width' => $this->getConfig()->get('cmp_overlay_width', '600px'),
+      '#height' => $this->getConfig()->get('cmp_overlay_height'),
+      '#width' => $this->getConfig()->get('cmp_overlay_width'),
       '#attached' => [
         'library' => [
           'sourcepoint/cmp',

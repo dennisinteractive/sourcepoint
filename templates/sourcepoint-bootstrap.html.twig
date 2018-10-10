@@ -29,7 +29,7 @@ window._sp_.config.content_control_callback = function() { window.location.href 
 {% if mms_domain %}
 window._sp_.config.mms_domain = '{{ mms_domain }}';
 {% endif %}
-{% if enable_rid %}
+{% if rid_enabled %}
 window._sp_.config.enable_rid = true;
 {% endif %}
 {% if style_manager_enabled %}

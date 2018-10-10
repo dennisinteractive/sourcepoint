@@ -125,7 +125,6 @@ class SettingsForm extends ConfigFormBase {
       '#title' => t('Site ID'),
       '#default_value' => $config->get('cmp_site_id'),
       '#size' => 50,
-      '#description' => t('Site ID for privacy manager.'),
       '#min' => 0,
     ];
     $form['cmp']['cmp_privacy_manager_id'] = [
@@ -133,21 +132,24 @@ class SettingsForm extends ConfigFormBase {
       '#title' => t('Privacy Manager ID'),
       '#default_value' => $config->get('cmp_privacy_manager_id'),
       '#size' => 50,
-      '#description' => t('Privacy Manager ID.'),
+    ];
+    $form['cmp']['cmp_shim_url'] = [
+      '#type' => 'textfield',
+      '#title' => t('Shim Script URL'),
+      '#default_value' => $config->get('cmp_shim_url'),
+      '#size' => 50,
     ];
     $form['cmp']['cmp_overlay_height'] = [
       '#type' => 'textfield',
       '#title' => t('Overlay Height'),
       '#default_value' => $config->get('cmp_overlay_height'),
       '#size' => 50,
-      '#description' => t('Height of the overlay iframe.'),
     ];
     $form['cmp']['cmp_overlay_width'] = [
       '#type' => 'textfield',
       '#title' => t('Overlay Width'),
       '#default_value' => $config->get('cmp_overlay_width'),
       '#size' => 50,
-      '#description' => t('Width of the overlay iframe.'),
     ];
 
     // Overlay iframe.
@@ -217,6 +219,7 @@ class SettingsForm extends ConfigFormBase {
       'cmp_privacy_manager_id',
       'cmp_overlay_height',
       'cmp_overlay_width',
+      'cmp_shim_url',
       'dtm_enabled',
       'dtm_timeout',
       'style_manager_enabled',

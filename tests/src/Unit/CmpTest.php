@@ -104,4 +104,17 @@ class CmpTest extends UnitTestCase {
     $this->assertEquals('sourcepoint/cmp', $overlay['#attached']['library'][0]);
   }
 
+  /**
+   * @covers ::getShimUrl
+   */
+  public function testGetShimUrl() {
+    $config = $this->getConfig([
+      ['cmp_shim_url', '//shim.example.com/shim.js'],
+    ]);
+    $config_factory = $this->getConfigFactory($config);
+    $cmp = new Cmp($config_factory);
+
+    $this->assertEquals($cmp->getShimUrl(), '//shim.example.com/shim.js');
+  }
+
 }

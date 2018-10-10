@@ -73,6 +73,13 @@ class Cmp implements CmpInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getShimUrl() {
+    return $this->getConfig()->get('cmp_shim_url');
+  }
+
+  /**
    * Get config.
    *
    * @return \Drupal\Core\Config\ImmutableConfig

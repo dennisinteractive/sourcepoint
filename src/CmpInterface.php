@@ -26,6 +26,14 @@ interface CmpInterface {
   public function getUrl();
 
   /**
+   * Gets the shim URL.
+   *
+   * @return string
+   *   URL to shim JS.
+   */
+  public function getShimUrl();
+
+  /**
    * Gets the privacy URL.
    *
    * @return array

@@ -50,6 +50,11 @@ function sourcepoint_page_bottom(array &$page_bottom) {
 function sourcepoint_page_attachments(array &$page) {
   // Get endpoint manager to get script paths.
   $endpoint_service = \Drupal::service('sourcepoint.api.endpoint_manager');
+
+  // Get CMP service.
+  $cmp = \Drupal::service('sourcepoint.cmp');
+
+  // Sourcepoint configuration.
   $config = \Drupal::config('sourcepoint.settings');
 
   // Bootstrap script element.
@@ -84,6 +89,20 @@ function sourcepoint_page_attachments(array &$page) {
     $bootstrap['#' . $config_name] = $config->get($config_name);
   }
 
-  // Attach to the page.
+  // Attach bootstrap to the page.
   $page['#attached']['html_head'][] = [$bootstrap, 'sourcepoint_bootstrap'];
+
+  // Attach shim to page.
+  if ($shim_url = $cmp->getShimUrl()) {
+    $page['#attached']['html_head'][] = [
+      [
+        '#tag' => 'script',
+        '#attributes' => [
+          'src' => $shim_url,
+          'async' => 'async',
+        ],
+      ],
+      'sourcepoint_shim',
+    ];
+  }
 }

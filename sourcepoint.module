@@ -73,6 +73,7 @@ function sourcepoint_page_attachments(array &$page) {
     'account_id',
     'cmp_enabled',
     'content_control_url',
+    'dtm_enable',
     'dtm_timeout',
     'mms_domain',
     'rid_enabled',

@@ -40,7 +40,7 @@ window._sp_.config.styleManager.enableSimple = true;
 window._sp_.config.cmp = _sp_.config.cmp || {};
 window._sp_.config.cmp.enabled = true;
 {% endif %}
-{% if dtm_timeout %}
+{% if dtm_enabled %}
 window._sp_.config.detection = _sp_.config.detection || {};
 window._sp_.config.detection.timeout = {{ dtm_timeout }};
 {% endif %}

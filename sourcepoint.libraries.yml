@@ -1,5 +1,5 @@
 cmp:
-  version: VERSION
+  version: 1.x
   js:
     js/cmp_overlay.js: { scope: footer }
   css:

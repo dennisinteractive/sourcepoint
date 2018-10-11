@@ -6,7 +6,7 @@ use Drupal\sourcepoint\Api\EndpointManagerInterface;
 use Drush\Commands\DrushCommands;
 
 /**
- * Class Fetch.
+ * Class Commands.
  *
  * @package Drupal\sourcepoint\Drush
  */

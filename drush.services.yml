@@ -1,0 +1,5 @@
+services:
+  sourcepoint.commands:
+    class: \Drupal\sourcepoint\Drush\Commands
+    tags:
+      - { name: drush.command }

@@ -38,6 +38,13 @@ function sourcepoint_theme($existing, $type, $theme, $path) {
  * Implements hook_page_bottom().
  */
 function sourcepoint_page_bottom(array &$page_bottom) {
+  // Sourcepoint configuration.
+  $config = \Drupal::config('sourcepoint.settings');
+  if (!$config->get('enabled')) {
+    // Not enabled so do nothing.
+    return;
+  }
+
   $cmp = \Drupal::service('sourcepoint.cmp');
   if ($cmp->enabled() && $overlay = $cmp->getOverlay()) {
     $page_bottom['sourcepoint_cmp_overlay'] = $overlay;
@@ -48,14 +55,18 @@ function sourcepoint_page_bottom(array &$page_bottom) {
  * Implements hook_page_attachments().
  */
 function sourcepoint_page_attachments(array &$page) {
+  // Sourcepoint configuration.
+  $config = \Drupal::config('sourcepoint.settings');
+  if (!$config->get('enabled')) {
+    // Not enabled so do nothing.
+    return;
+  }
+
   // Get endpoint manager to get script paths.
   $endpoint_service = \Drupal::service('sourcepoint.api.endpoint_manager');
 
   // Get CMP service.
   $cmp = \Drupal::service('sourcepoint.cmp');
-
-  // Sourcepoint configuration.
-  $config = \Drupal::config('sourcepoint.settings');
 
   // Bootstrap script element.
   $bootstrap = [

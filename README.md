@@ -5,4 +5,4 @@ Compensation consent for publishers & consumers.
 Once enabled, configure at `/admin/config/system/sourcepoint`
 
 ### Drush Commands
-- `sourcpoint:fetch`: Fetches and stores sourcepoint scripts.
+- `sourcepoint:fetch`: Fetches and stores sourcepoint scripts.

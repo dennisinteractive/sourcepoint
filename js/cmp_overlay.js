@@ -7,7 +7,7 @@
         modal.style.display = 'none';
     }
 
-    var modalLinks = document.querySelectorAll('.sourcepoint-cmp-overlay');
+    var modalLinks = document.querySelectorAll('[rel=sourcepoint-cmp-overlay]');
     for (var i = 0; i < modalLinks.length; i++) {
         modalLinks[i].onclick = function(e) {
             var iframe = document.getElementById('sourcepoint-cmp-modal-iframe');

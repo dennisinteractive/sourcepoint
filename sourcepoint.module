@@ -1,521 +1,119 @@
 <?php
+
 /**
  * @file
- * Code for the Sourcepoint core module.
+ * Sourcepoint module.
  */
-
-/**
- * Implements hook_menu().
- */
-function sourcepoint_menu() {
-  $items['admin/config/system/sourcepoint'] = array(
-    'title' => 'Sourcepoint',
-    'description' => 'Configure Sourcepoint parameters.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('sourcepoint_admin_settings_form'),
-    'access arguments' => array('administer sourcepoint'),
-    'type' => MENU_NORMAL_ITEM,
-    'file' => 'sourcepoint.admin.inc',
-  );
-  // Page callback for src.
-  if ($recovery_script_path = variable_get('sourcepoint_recovery_script_path')) {
-    $items[$recovery_script_path] = array(
-      'page callback' => 'sourcepoint_variable_script_path',
-      'page arguments' => array('recovery'),
-      'access callback' => TRUE,
-      'type' => MENU_CALLBACK,
-    );
-  }
-  // Page callback for pub_base.
-  if ($pub_base = variable_get('sourcepoint_recovery_script_pub_base')) {
-    $pub_base = parse_url($pub_base);
-    if (isset($pub_base['path'])) {
-      $pub_base = $pub_base['path'];
-      $pub_base = trim($pub_base, '/');
-      $items[$pub_base] = array(
-        'page callback' => 'sourcepoint_recovery_script_pub_base_page',
-        'access callback' => TRUE,
-        'type' => MENU_CALLBACK,
-      );
-    }
-  }
-  // Page callback for msg script.
-  if ($msg_script_path = variable_get('sourcepoint_msg_script_path')) {
-    $items[$msg_script_path] = array(
-      'page callback' => 'sourcepoint_variable_script_path',
-      'page arguments' => array('msg'),
-      'access callback' => TRUE,
-      'type' => MENU_CALLBACK,
-    );
-  }
-  // Page callback for mms_client script.
-  if ($mms_client_script_path = variable_get('sourcepoint_mms_client_script_path')) {
-    $items[$mms_client_script_path] = array(
-      'page callback' => 'sourcepoint_variable_script_path',
-      'page arguments' => array('mms_client'),
-      'access callback' => TRUE,
-      'type' => MENU_CALLBACK,
-    );
-  }
-  // Allow <sourcepoint_cmp_overlay> to be used in menus.
-  if (variable_get('sourcepoint_cmp_enabled', 1)) {
-    $items['<sourcepoint_cmp_overlay>'] = array(
-      'type' => MENU_CALLBACK,
-      'page callback' => 'drupal_goto',
-      'page arguments' => array(sourcepoint_get_privacy_manager_url()),
-      'access callback' => TRUE,
-    );
-  }
-
-  return $items;
-}
-
-/**
- * Implements hook_menu_link_alter().
- */
-function sourcepoint_menu_link_alter(&$item) {
-  // Allow <sourcepoint_cmp_overlay> links to be altered and add overlay class.
-  if ($item['link_path'] == '<sourcepoint_cmp_overlay>') {
-    $item['options']['alter'] = TRUE;
-    $item['options']['attributes']['class'][] = 'sourcepoint-cmp-overlay';
-  }
-}
-
-/**
- * Implements hook_translated_menu_link_alter().
- */
-function sourcepoint_translated_menu_link_alter(&$item) {
-  // Change overlay link to external URL.
-  if ($item['link_path'] == '<sourcepoint_cmp_overlay>') {
-    $item['href'] = sourcepoint_get_privacy_manager_url();
-  }
-}
-
-/**
- * Implements hook_permission().
- */
-function sourcepoint_permission() {
-  return array(
-    'administer sourcepoint' => array(
-      'title' => t('Administer Sourcepoint'),
-      'description' => t('Configure Sourcepoint.')
-    )
-  );
-}
 
 /**
  * Implements hook_theme().
  */
 function sourcepoint_theme($existing, $type, $theme, $path) {
-  return array(
-    'sourcepoint_cmp_overlay' => array(
-      'variables' => array(
-        'url' => NULL,
+  return [
+    'sourcepoint_cmp_overlay' => [
+      'variables' => [
         'height' => NULL,
         'width' => NULL,
-      ),
-      'template' => 'sourcepoint-cmp-overlay',
-      'path' => $path . '/templates',
-    ),
-  );
+        'url' => NULL,
+      ],
+    ],
+    'sourcepoint_bootstrap' => [
+      'variables' => [
+        'account_id' => NULL,
+        'bootstrap_path' => NULL,
+        'cmp_enabled' => NULL,
+        'content_control_url' => NULL,
+        'dtm_enabled' => NULL,
+        'dtm_timeout' => NULL,
+        'mms_domain' => NULL,
+        'msg_url' => NULL,
+        'rid_enabled' => NULL,
+        'style_manager_enabled' => NULL,
+      ],
+    ],
+  ];
 }
 
 /**
- * Page callback for script path.
+ * Implements hook_page_bottom().
  */
-function sourcepoint_variable_script_path($variable_name) {
-  drupal_add_http_header('Content-Type', 'text/javascript');
-  print sourcepoint_get_script($variable_name);
-  drupal_exit();
-}
-
-/**
- * Page callback for recovery script path.
- */
-function sourcepoint_recovery_script_pub_base_page() {
-  watchdog('sourcepoint', t('Pub base url hit %url. Did anything go wrong with the apache redirect?', array('%url' => current_path())), [], WATCHDOG_ERROR);
-  header("HTTP/1.0 404 Not Found");
-  drupal_exit();
-}
-
-/**
- * Implements hook_page_build().
- */
-function sourcepoint_page_build(&$page) {
-
-  if (path_is_admin(current_path())) {
+function sourcepoint_page_bottom(array &$page_bottom) {
+  // Sourcepoint configuration.
+  $config = \Drupal::config('sourcepoint.settings');
+  if (!$config->get('enabled')) {
+    // Not enabled so do nothing.
     return;
   }
 
-  if (!variable_get('sourcepoint_enabled', 1)) {
+  $cmp = \Drupal::service('sourcepoint.cmp');
+  if ($cmp->enabled() && $overlay = $cmp->getOverlay()) {
+    $page_bottom['sourcepoint_cmp_overlay'] = $overlay;
+  }
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function sourcepoint_page_attachments(array &$page) {
+  // Sourcepoint configuration.
+  $config = \Drupal::config('sourcepoint.settings');
+  if (!$config->get('enabled')) {
+    // Not enabled so do nothing.
     return;
   }
 
-  if ($script = sourcepoint_get_script('bootstrap')) {
+  // Get endpoint manager to get script paths.
+  $endpoint_service = \Drupal::service('sourcepoint.api.endpoint_manager');
 
-    $script .= "\nwindow._sp_ = window._sp_ || {};";
-    $script .= "\nwindow._sp_.config = window._sp_.config || {};";
+  // Get CMP service.
+  $cmp = \Drupal::service('sourcepoint.cmp');
 
-    $config = array();
+  // Bootstrap script element.
+  $bootstrap = [
+    '#tag' => 'script',
+    '#attributes' => [
+      'type' => 'text/javascript',
+    ],
+    '#theme' => 'sourcepoint_bootstrap',
+  ];
 
-    if ($account_id = variable_get('sourcepoint_account_id', '')) {
-      $config['account_id'] = intval($account_id);
-    }
+  // Path to bootstrap for inclusion.
+  $bootstrap['#bootstrap_path'] = $endpoint_service->getEndpoint('bootstrap')->getPath();
 
-    if ($pub_base = variable_get('sourcepoint_recovery_script_pub_base', '')) {
-      $config['publisher_base'] = "'" . $pub_base . "'";
-    }
-
-    if ($landing_page = variable_get('sourcepoint_content_control_url', '')) {
-      // Redirect to content control  window.location redirect.
-      $config['content_control_callback'] = "function() { window.location.href = '$landing_page'; }";
-    }
-    else {
-      // Output content control console message, if redirect URL isn't set.
-      $config['content_control_callback'] = "function() { console.log('CC triggered'); }";
-    }
-
-    // MMS init. is mandatory
-    $script .= "\nwindow._sp_.mms = window._sp_.mms || {};";
-    $script .= "\nwindow._sp_.mms.cmd = window._sp_.mms.cmd || [];";
-
-
-    // MMS domain.
-    if ($mms_domain = variable_get('sourcepoint_mms_domain', '')) {
-      $config['mms_domain'] = "'" . $mms_domain . "'";
-    }
-
-    // RID enabled.
-    if (variable_get('sourcepoint_rid_enabled', 1)) {
-      $config['enable_rid'] = 'true';
-    }
-
-    // Style Manager Enabled.
-    if (variable_get('sourcepoint_style_manager', 1)) {
-      $config['styleManager'] = '{}';
-      $config['styleManager.enableSimple'] = 'true';
-    }
-
-    // Allow other modules to alter sourcepoint JS config.
-    drupal_alter('sourcepoint_js_config', $config);
-
-    foreach ($config as $key => $value) {
-      $script .= "\nwindow._sp_.config." . $key . " = " . $value . ";";
-    }
-
-    // Consent Management Platform.
-    $script .= "\nwindow._sp_.config.cmp = _sp_.config.cmp || {};";
-    $cmp_value = variable_get('sourcepoint_cmp_enabled', 1) ? 'true' : 'false';
-    $script .= "\nwindow._sp_.config.cmp.enabled = " . $cmp_value . ";";
-
-    // Overlay iframe.
-    if (variable_get('sourcepoint_cmp_enabled', 1) && $overlay = sourcepoint_get_privacy_manager_overlay()) {
-      $page['page_bottom']['sourcepoint_cmp_overlay'] = $overlay;
-    }
-
-    // Detection Timeout Management.
-    if (variable_get('sourcepoint_dtm_enabled', 1)) {
-      $script .= "\nwindow._sp_.config.detection = _sp_.config.detection || {};";
-      $timeout_value = (int) variable_get('sourcepoint_dtm_timeout', 500);
-      $script .= "\nwindow._sp_.config.detection.timeout = " . $timeout_value . ";";
-    }
-
-    // Recovery script.
-    if ($recovery_script_path = variable_get('sourcepoint_recovery_script_path')) {
-      $path = file_create_url($recovery_script_path, ['absolute' => TRUE]);
-      $script .= "\nwindow._sp_.bootstrap('$path');";
-    }
-
-    // MSG script.
-    if ($msg_script_path = variable_get('sourcepoint_msg_script_path')) {
-      $path = file_create_url($msg_script_path, ['absolute' => TRUE]);
-      $script .= "\nwindow._sp_.bootstrap('$path');";
-    }
-
-    // MMS Client.
-    // And with the latest version, there is no need to load the mms client, because it is already included in the MMS Library
-    if ($mms_client_script_path = variable_get('sourcepoint_mms_client_script_path')) {
-      $path = file_create_url($mms_client_script_path, ['absolute' => TRUE]);
-      $script .= "\nwindow._sp_.bootstrap('$path');";
-    }
-
-    $script .= "\nwindow._sp_.mms.cmd.push(function(){ window._sp_.mms.startMsg(); });";
-
-
-    $element = array(
-      '#tag' => 'script',
-      '#weight' => 1010,
-      '#value' => $script,
-      '#attributes' => array(
-        'type' => 'text/javascript',
-      ),
-    );
-    drupal_add_html_head($element, 'sourcepoint');
-  }
-}
-
-/**
- * Function responsible to fetch the script from the server.
- *
- * @param      $script_type 'bootstrap or recovery'.
- * @param null $api_key The api key provided by sourcepoint.
- * @param null $options The options to go along with the request.
- *
- * @return null
- * @throws Exception
- */
-function sourcepoint_fetch_script($script_type, $api_key = NULL, $options = NULL) {
-  if (is_null($options)) {
-    // Get options for the script.
-    $options = _sourcepoint_get_script_options($script_type);
-  }
-  if (is_null($api_key)) {
-    // Get API keys from settings.
-    $api_key = variable_get('sourcepoint_api_key');
+  // URL to msg JS.
+  if ($msg_path = $endpoint_service->getEndpoint('msg')->getPath()) {
+    $bootstrap['#msg_url'] = file_create_url($msg_path);
   }
 
-  try {
-    $endpoint = _sourcepoint_get_endpoint($script_type);
-    $sourcePoint = new SourcePointAsset($endpoint, $api_key);
-    $sourcePoint->setOptions($options);
-    $response = $sourcePoint->fetch();
-
-    if ($script = $response->script) {
-      return $script;
-    }
-  } catch (Exception $e) {
-    throw $e;
-  }
-}
-
-function _sourcepoint_get_endpoint($script_type) {
-  switch ($script_type) {
-    case 'recovery':
-      return 'cs_recovery';
-      break;
-
-    case 'bootstrap':
-      return 'bootstrap';
-      break;
-
-    case 'msg':
-      return 'msg';
-      break;
-
-    case 'mms_client':
-      return 'mms_client';
-      break;
-
-    default:
-      drupal_set_message(t('Script type "!type" is invalid.', array('!type' => $script_type)), 'error');
-  }
-}
-
-/**
- * Helper to set the message on the script status.
- *
- * @param $message
- * @param $class
- *
- * @return string
- */
-function _sourcepoint_set_message($message, $class) {
-  return '<div class="' . $class . '">' . $message . '</div>';
-}
-
-/**
- * Helper to build the key used to store the script in the variables.
- *
- * @param $options
- *
- * @return string
- */
-function _sourcepoint_build_script_key($options) {
-  return implode('_', array_values($options));
-}
-
-/**
- * Helper to get the script from local storage.
- *
- * @param null  $script_type
- * @param array $form_state If this argument is passed, the values will be
- * retrieved from it. Default is to retrieve from settings.
- *
- * @return bool or the script
- */
-function sourcepoint_get_script($script_type, $form_state = []) {
-  $script_value = variable_get('sourcepoint_' . $script_type . '_script');
-  $options = _sourcepoint_get_script_options($script_type, $form_state);
-  $key = _sourcepoint_build_script_key($options);
-  if (isset($script_value[$key])) {
-    return $script_value[$key];
+  // Pass config to the template.
+  $config_names = [
+    'account_id',
+    'cmp_enabled',
+    'content_control_url',
+    'dtm_enabled',
+    'dtm_timeout',
+    'mms_domain',
+    'rid_enabled',
+    'style_manager_enabled',
+  ];
+  foreach ($config_names as $config_name) {
+    $bootstrap['#' . $config_name] = $config->get($config_name);
   }
 
-  return FALSE;
-}
+  // Attach bootstrap to the page.
+  $page['#attached']['html_head'][] = [$bootstrap, 'sourcepoint_bootstrap'];
 
-/**
- * Helper to return the array of options and values for the Recovery script.
- *
- * @param array $form_state If this argument is passed, the values will be
- * retrieved from it. Default is to retrieve from settings.
- * @param null  $script_type
- *
- * @return array
- */
-function _sourcepoint_get_script_options($script_type, $form_state = []) {
-  switch ($script_type) {
-    case 'recovery':
-      if (isset($form_state['input']['sourcepoint_recovery_script_pub_base'])) {
-        $pub_base = $form_state['input']['sourcepoint_recovery_script_pub_base'];
-      }
-      else {
-        global $base_url;
-        $pub_base = rtrim(variable_get('sourcepoint_recovery_script_pub_base', $base_url . '/pub/base'), '/');
-      }
-
-      if (isset($form_state['input']['sourcepoint_recovery_script_pub_adserver'])) {
-        $pub_adserver = $form_state['input']['sourcepoint_recovery_script_pub_adserver'];
-      }
-      else {
-        $pub_adserver = variable_get('sourcepoint_recovery_script_pub_adserver', '');
-      }
-
-      if (isset($form_state['input']['sourcepoint_recovery_script_env'])) {
-        $env = $form_state['input']['sourcepoint_recovery_script_env'];
-      }
-      else {
-        $env = variable_get('sourcepoint_recovery_script_env', 'prod');
-      }
-
-      if (isset($form_state['input']['sourcepoint_recovery_script_format'])) {
-        $fmt = $form_state['input']['sourcepoint_recovery_script_format'];
-      }
-      else {
-        $fmt = variable_get('sourcepoint_recovery_script_format', 'js');
-      }
-
-      $include_msg = variable_get('sourcepoint_recovery_script_include_msg', 'true');
-      $include_msg = ($include_msg) ? 'true' : 'false';
-
-      return [
-        'pub_base' => $pub_base,
-        'pub_adserver' => $pub_adserver,
-        'env' => $env,
-        'fmt' => $fmt,
-        'include_msg' => $include_msg,
-      ];
-      break;
-
-    case 'bootstrap':
-      if (isset($form_state['input']['sourcepoint_bootstrap_script_version'])) {
-        $version = $form_state['input']['sourcepoint_bootstrap_script_version'];
-      }
-      else {
-        $version = variable_get('sourcepoint_bootstrap_script_version', '');
-      }
-
-      return [
-        'v' => $version,
-        'fmt' => 'js',
-      ];
-      break;
-
-    case 'msg':
-      if (isset($form_state['input']['sourcepoint_msg_script_version'])) {
-        $version = $form_state['input']['sourcepoint_msg_script_version'];
-      }
-      else {
-        $version = variable_get('sourcepoint_msg_script_version', '');
-      }
-
-      return [
-        'v' => $version,
-        'fmt' => 'js',
-      ];
-      break;
-
-    case 'mms_client':
-      if (isset($form_state['input']['sourcepoint_mms_client_script_version'])) {
-        $version = $form_state['input']['sourcepoint_mms_client_script_version'];
-      }
-      else {
-        $version = variable_get('sourcepoint_mms_client_script_version', '');
-      }
-
-      return [
-        'v' => $version,
-        'fmt' => 'js',
-      ];
-      break;
-
-    default:
-      drupal_set_message(t('Script type "!type" is invalid.', array('!type' => $script_type)), 'error');
-  }
-
-}
-
-/**
- * Get list of supported ad servers.
- */
-function sourcepoint_get_ad_servers() {
-  static $ad_servers;
-  if (is_array($ad_servers)) {
-    return $ad_servers;
-  }
-
-  // Fetch supported ad servers.
-  $ad_servers = module_invoke_all('sourcepoint_ad_servers');
-  return $ad_servers;
-}
-
-/**
- * Get the URL of the privacy manager.
- *
- * @return string
- */
-function sourcepoint_get_privacy_manager_url() {
-  $mms_domain = variable_get('sourcepoint_mms_domain');
-  $privacy_manager_id = variable_get('sourcepoint_cmp_privacy_manager_id');
-  $site_id = variable_get('sourcepoint_cmp_site_id');
-
-  if (!empty($mms_domain) && !empty($site_id) && !empty($privacy_manager_id)) {
-    return url('//' . $mms_domain . '/cmp/privacy_manager', array(
-      'query' => array(
-        'privacy_manager_id' => $privacy_manager_id,
-        'site_id' => $site_id,
-      )
-    ));
-  }
-}
-
-/**
- * Render array for privacy manager overlay.
- *
- * @return array
- */
-function sourcepoint_get_privacy_manager_overlay() {
-  if ($url = sourcepoint_get_privacy_manager_url()) {
-    $module_path = drupal_get_path('module', 'sourcepoint');
-    $overlay = array(
-      '#theme' => 'sourcepoint_cmp_overlay',
-      '#url' => $url,
-      '#height' => check_plain(variable_get('sourcepoint_cmp_overlay_height', '600px')),
-      '#width' => check_plain(variable_get('sourcepoint_cmp_overlay_width', '600px')),
-      '#attached' => array(
-        'css' => array(
-          $module_path . '/css/cmp_overlay.css',
-        ),
-        'js' => array(
-          $module_path . '/js/cmp_overlay.js' => array(
-            'attributes' => array(
-              'async' => 'async',
-            ),
-            'scope' => 'footer',
-          ),
-        ),
-      ),
-    );
-    return $overlay;
+  // Attach shim to page.
+  if ($shim_url = $cmp->getShimUrl()) {
+    $page['#attached']['html_head'][] = [
+      [
+        '#tag' => 'script',
+        '#attributes' => [
+          'src' => $shim_url,
+          'async' => 'async',
+        ],
+      ],
+      'sourcepoint_shim',
+    ];
   }
 }

@@ -519,3 +519,18 @@ function sourcepoint_get_privacy_manager_overlay() {
     return $overlay;
   }
 }
+
+
+function sourcepoint_preprocess_page(&$variables) { 
+  if($script = variable_get('sourcepoint_cmp_shim_script')) {
+    if(variable_get('cmp_shim_script_async') == TRUE) {
+      $async = 'async="async"';
+    }
+    $element = array(
+      '#type' => 'markup',
+      '#weight' => 1016,
+      '#markup' => '<script type="text/javascript" src="'.$script.'" '.$async.'></script>',
+    );
+    drupal_add_html_head($element, 'site_sourcepoint_cmp_shim'); 
+  }  
+}

@@ -96,7 +96,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#default_value' => variable_get('cmp_shim_script_async', ''),
     '#description' => t('make cmp shim script run asynchronously.'),
   );
-  
+
   // Overlay iframe.
   if ($url = sourcepoint_get_privacy_manager_url()) {
     $messages = array();

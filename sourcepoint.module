@@ -259,7 +259,7 @@ function sourcepoint_page_build(&$page) {
       '#weight' => 1016,
       '#markup' => '<script type="text/javascript" src="'.$script.'" '.$async.'></script>',
     );
-    drupal_add_html_head($element, 'site_sourcepoint_cmp_shim'); 
+    drupal_add_html_head($element, 'site_sourcepoint_cmp_shim');
   }
 }
 

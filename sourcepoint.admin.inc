@@ -82,6 +82,19 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#size' => 50,
     '#description' => t('Width of the overlay iframe.'),
   );
+  $form['cmp']['sourcepoint_cmp_shim_script'] = array(
+    '#type' => 'textfield',
+    '#title' => t('cmp shim script url'),
+    '#default_value' => variable_get('sourcepoint_cmp_shim_script', ''),
+    '#size' => 50,
+    '#description' => t('URL of the cmp shim script.'),
+  );
+  $form['cmp']['sourcepoint_cmp_shim_async'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('run cmp shim script as async'),
+    '#default_value' => variable_get('cmp_shim_script_async', ''),
+    '#description' => t('make cmp shim script run asynchronously.'),
+  );
 
   // Overlay iframe.
   if ($url = sourcepoint_get_privacy_manager_url()) {

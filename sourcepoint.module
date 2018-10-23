@@ -252,6 +252,17 @@ function sourcepoint_page_build(&$page) {
     );
     drupal_add_html_head($element, 'sourcepoint');
   }
+
+  // CMP shin script
+  if ($script = variable_get('sourcepoint_cmp_shim_script')) {
+    $async =  variable_get('cmp_shim_script_async') ? 'async="async"' : '';
+    $element = array(
+      '#type' => 'markup',
+      '#weight' => 1016,
+      '#markup' => '<script type="text/javascript" src="'.$script.'" '.$async.'></script>',
+    );
+    drupal_add_html_head($element, 'site_sourcepoint_cmp_shim');
+  }
 }
 
 /**

@@ -92,7 +92,7 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
   $form['cmp']['sourcepoint_cmp_shim_async'] = array(
     '#type' => 'checkbox',
     '#title' => t('run cmp shim script as async'),
-    '#default_value' => variable_get('cmp_shim_script_async', ''),
+    '#default_value' => variable_get('sourcepoint_cmp_shim_async', ''),
     '#description' => t('make cmp shim script run asynchronously.'),
   );
 

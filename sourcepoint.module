@@ -255,7 +255,7 @@ function sourcepoint_page_build(&$page) {
 
   // CMP shin script
   if ($script = check_plain(variable_get('sourcepoint_cmp_shim_script'))) {
-    $async =  variable_get('cmp_shim_script_async') ? 'async="async"' : '';
+    $async =  variable_get('sourcepoint_cmp_shim_async') ? 'async="async"' : '';
     $element = array(
       '#type' => 'markup',
       '#weight' => 1016,

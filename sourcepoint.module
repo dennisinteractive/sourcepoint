@@ -252,7 +252,9 @@ function sourcepoint_page_build(&$page) {
     );
     drupal_add_html_head($element, 'sourcepoint');
   }
-  if($script = variable_get('sourcepoint_cmp_shim_script')) {
+
+  // CMP shin script
+  if ($script = variable_get('sourcepoint_cmp_shim_script')) {
     $async =  variable_get('cmp_shim_script_async') ? 'async="async"' : '';
     $element = array(
       '#type' => 'markup',

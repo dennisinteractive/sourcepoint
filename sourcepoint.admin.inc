@@ -82,12 +82,11 @@ function sourcepoint_admin_settings_form($form, &$form_state) {
     '#size' => 50,
     '#description' => t('Width of the overlay iframe.'),
   );
-
   $form['cmp']['sourcepoint_cmp_shim_script'] = array(
     '#type' => 'textfield',
     '#title' => t('cmp shim script url'),
     '#default_value' => variable_get('sourcepoint_cmp_shim_script', ''),
-    '#size' => 250,
+    '#size' => 50,
     '#description' => t('URL of the cmp shim script.'),
   );
   $form['cmp']['sourcepoint_cmp_shim_async'] = array(
